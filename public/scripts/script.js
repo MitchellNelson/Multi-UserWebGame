@@ -1,3 +1,4 @@
+
 var config = {
     type: Phaser.AUTO,
     width: 800,
@@ -16,13 +17,14 @@ var config = {
 };
 
 var player;
+var dot;
 var cursors;
 var score = 0;
 var gameOver = false;
 var scoreText;
 
-var game = new Phaser.Game(config);
 
+var game = new Phaser.Game(config);
 function preload ()
 {
     this.load.image('sky', 'assets/sky.png');
@@ -34,15 +36,12 @@ function preload ()
 
 function create ()
 {
-    //  A simple background for our game
     this.add.image(400, 300, 'sky');
-   // The player and its settings
-    player = this.physics.add.sprite(100, 450, 'dude');
+    
+	player = this.physics.add.sprite(100, 450, 'dude');
 
-    //  Player physics properties. Give the little guy a slight bounce.
     player.setCollideWorldBounds(true);
 
-    //  Our player animations, turning, walking left and walking right.
     this.anims.create({
         key: 'left',
         frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
@@ -68,16 +67,31 @@ function create ()
 
     //  The score
     scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-
+	
+	dot = this.physics.add.image(400, 300, 'star');
+	this.physics.add.overlap(player, dot, player_collide_dot, null, this);
 }
 
 function update ()
 {
-    if (gameOver)
+	track_movements();
+	if(dot == null){
+		dot = this.physics.add.image(Math.floor(Math.random() * 13) * 64, Math.floor(Math.random() * 10) * 64, 'star');
+		this.physics.add.overlap(player, dot, player_collide_dot, null, this);
+	}
+}
+function player_collide_dot(){
+	dot.destroy();
+	dot = null;
+	score += 1;
+	scoreText.setText('Score: ' + score);
+	console.log("collision with apple");
+}
+function track_movements(){
+	if (gameOver)
     {
         return;
     }
-
     if (cursors.left.isDown)
     {
         player.setVelocityX(-160);
@@ -99,11 +113,5 @@ function update ()
     {
         player.setVelocityY(160);
 		player.setVelocityX(0);
-    } else
-    {
-        player.setVelocityX(0);
-		player.setVelocityY(0);
-        player.anims.play('turn');
     }
 }
-
