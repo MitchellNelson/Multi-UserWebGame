@@ -15,7 +15,7 @@ var config = {
         update: update
     }
 };
-
+var tail;
 var player;
 var dot;
 var cursors;
