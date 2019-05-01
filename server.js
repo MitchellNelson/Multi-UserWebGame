@@ -3,7 +3,7 @@ var express = require('express');
 var sqlite3 = require('sqlite3');
 
 var app = express();
-var port = 8002;
+var port = 8016;
 var db_filename = path.join(__dirname, 'db', 'my_database.sqlite3');
 var public_dir = path.join(__dirname, 'public');
 
