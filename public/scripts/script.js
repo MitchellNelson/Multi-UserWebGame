@@ -22,6 +22,7 @@ var score = 0;
 var gameOver = false;
 var scoreText;
 
+var snake = [];
 
 var game = new Phaser.Game(config);
 function preload ()
@@ -36,10 +37,12 @@ function preload ()
 function create ()
 {
     this.add.image(400, 300, 'sky');
-    
+
 	player = this.physics.add.sprite(100, 450, 'dude');
 
     player.setCollideWorldBounds(true);
+
+	snake.push(player);
 
     this.anims.create({
         key: 'left',
@@ -78,6 +81,19 @@ function update ()
 		dot = this.physics.add.image(Math.floor(Math.random() * 13) * 64, Math.floor(Math.random() * 10) * 64, 'star');
 		this.physics.add.overlap(player, dot, player_collide_dot, null, this);
 	}
+	//update tail positions
+	for(var i = 0; i < snake.length; ++i)
+	{
+
+		snake[i].body.velocity.prevx = snake[i].body.velocity.x;
+		snake[i].body.velocity.prevy = snake[i].body.velocity.y;
+
+		if(i != 0)
+		{
+			snake[i].body.velocity.x = snake[i-1].body.velocity.prevx;
+			snake[i].body.velocity.y = snake[i-1].body.velocity.prevy;
+		}
+	}
 }
 function player_collide_dot(){
 	dot.destroy();
@@ -85,6 +101,14 @@ function player_collide_dot(){
 	score += 1;
 	scoreText.setText('Score: ' + score);
 	console.log("collision with apple");
+
+	leaderx = snake[snake.length-1].x;
+	leadery = snake[snake.length-1].y;
+
+	newtail = this.physics.add.sprite(leaderx-10, leadery-10, 'dude');
+	console.log("x: " + leaderx + " y: " + leadery);
+
+	snake.push(newtail);
 }
 function track_movements(){
 	if (gameOver)
@@ -93,24 +117,24 @@ function track_movements(){
     }
     if (cursors.left.isDown)
     {
-        player.setVelocityX(-160);
+        player.setVelocityX(-1600);
 		player.setVelocityY(0);
         player.anims.play('left', true);
     }
     else if (cursors.right.isDown)
     {
-        player.setVelocityX(160);
+        player.setVelocityX(1600);
 		player.setVelocityY(0);
         player.anims.play('right', true);
     }
 	else if (cursors.up.isDown)
     {
-        player.setVelocityY(-160);
+        player.setVelocityY(-1600);
 		player.setVelocityX(0);
     }   
 	else if (cursors.down.isDown)
     {
-        player.setVelocityY(160);
+        player.setVelocityY(1600);
 		player.setVelocityX(0);
     }
 }
