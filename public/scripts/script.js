@@ -63,9 +63,9 @@ function update ()
 	//update tail positions
 	for(var i = 0; i < snake.length; ++i)
 	{
-		snake[i].body.velocity.prevx = snake[i].body.velocity.x;
-		snake[i].body.velocity.prevy = snake[i].body.velocity.y;
-		
+		//snake[i].body.velocity.prevx = snake[i].body.velocity.x;
+		//snake[i].body.velocity.prevy = snake[i].body.velocity.y;
+		snake[i].body.prevVelocity = snake[i].body.velocity;		
 		if(i != 0)
 		{
 			var is_closeX = snake[i].body.velocity.y == 0 && snake[i].x <= (snake[i-1].changeLocationX+3) && snake[i].x >= (snake[i-1].changeLocationX-3); 
@@ -76,9 +76,11 @@ function update ()
 
 				snake[i].y = snake[i-1].y+getYPadding(snake[i-1]);;
 				snake[i].x = snake[i-1].x;
+				snake[i].body.setVelocityX(snake[i-1].body.prevVelocity.x);
+				snake[i].body.setVelocityY(snake[i-1].body.prevVelocity.y);
 
-				snake[i].setVelocityY(snake[i-1].body.velocity.prevy);
-				snake[i].setVelocityX(0);
+				//snake[i].setVelocityY(snake[i-1].body.velocity.prevy);
+				//snake[i].setVelocityX(0);
 
 				//set changed location for the next element
 				snake[i].changeLocationX = snake[i].x;
@@ -91,9 +93,11 @@ function update ()
 
 				snake[i].x = snake[i-1].x+getXPadding(snake[i-1]);
 				snake[i].y = snake[i-1].y;
+				snake[i].body.setVelocityX(snake[i-1].body.prevVelocity.x);
+				snake[i].body.setVelocityY(snake[i-1].body.prevVelocity.y);
 
-				snake[i].setVelocityX(snake[i-1].body.velocity.prevx);
-				snake[i].setVelocityY(0);
+			//	snake[i].setVelocityX(snake[i-1].body.velocity.prevx);
+			//	snake[i].setVelocityY(0);
 
 				//set changed location for the next element
 				snake[i].changeLocationX = snake[i].x;
