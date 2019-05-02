@@ -40,6 +40,8 @@ function create ()
 
 	player = this.physics.add.sprite(100, 450, 'dude');
 
+	player.turnLocations = [];
+
     player.setCollideWorldBounds(true);
 	player.onWorldBounds = true;
 	snake.push(player);
@@ -68,42 +70,64 @@ function update ()
 		snake[i].body.prevVelocity = snake[i].body.velocity;		
 		if(i != 0)
 		{
-			var is_closeX = snake[i].body.velocity.y == 0 && snake[i].x <= (snake[i-1].changeLocationX+3) && snake[i].x >= (snake[i-1].changeLocationX-3); 
-			
-			var is_closeY = snake[i].body.velocity.x == 0 && snake[i].y <= (snake[i-1].changeLocationY+3) && snake[i].y >= (snake[i-1].changeLocationY-3); 
+			var is_closeX = false;
+			var is_closeY = false;
+
+			if(snake[i-1].turnLocations.length > 0)
+			{
+				var is_closeX = snake[i].body.velocity.y == 0 && snake[i].x <= (snake[i-1].turnLocations[0].x+3) && snake[i].x >= (snake[i-1].turnLocations[0].x-3); 
+				console.log("snake i-1 x: " + snake[i-1].turnLocations[0].x);
+				var is_closeY = snake[i].body.velocity.x == 0 &&  snake[i].y <= (snake[i-1].turnLocations[0].y+3) && snake[i].y >= (snake[i-1].turnLocations[0].y-3); 
+			}
+
 			if(is_closeX){
 				console.log("Tail changing X velocity")
 
 				snake[i].y = snake[i-1].y+getYPadding(snake[i-1]);;
 				snake[i].x = snake[i-1].x;
-				snake[i].body.setVelocityX(snake[i-1].body.prevVelocity.x);
-				snake[i].body.setVelocityY(snake[i-1].body.prevVelocity.y);
+
+				snake[i].body.setVelocityX(snake[i-1].turnLocations[0].velocityX);
+				snake[i].body.setVelocityY(snake[i-1].turnLocations[0].velocityY);
 
 				//snake[i].setVelocityY(snake[i-1].body.velocity.prevy);
 				//snake[i].setVelocityX(0);
 
 				//set changed location for the next element
+
+				snake[i].turnLocations.push({"x": snake[i].x, "y": snake[i].y, "velocityX": snake[i].body.velocity.x, "velocityY": snake[i].body.velocity.y});
+				snake[i-1].turnLocations = snake[i-1].turnLocations.slice(1);
+
+				console.log(snake[i].turnLocations[0].velocityX);
+/*
+
 				snake[i].changeLocationX = snake[i].x;
 				snake[i].changeLocationY = snake[i].y;		
 				snake[i-1].changeLocationX = null;
 				snake[i-1].changeLocationY = null;
+*/
 			}
 			if(is_closeY){
 				console.log("Tail changing Y velocity")
 
 				snake[i].x = snake[i-1].x+getXPadding(snake[i-1]);
 				snake[i].y = snake[i-1].y;
-				snake[i].body.setVelocityX(snake[i-1].body.prevVelocity.x);
-				snake[i].body.setVelocityY(snake[i-1].body.prevVelocity.y);
+				snake[i].body.setVelocityX(snake[i-1].turnLocations[0].velocityX);
+				snake[i].body.setVelocityY(snake[i-1].turnLocations[0].velocityY);
 
 			//	snake[i].setVelocityX(snake[i-1].body.velocity.prevx);
 			//	snake[i].setVelocityY(0);
 
 				//set changed location for the next element
+				snake[i].turnLocations.push({"x": snake[i].x, "y": snake[i].y, "velocityX": snake[i].body.velocity.x, "velocityY": snake[i].body.velocity.y});
+				snake[i-1].turnLocations = snake[i-1].turnLocations.slice(1);
+
+				console.log(snake[i].turnLocations[0].velocityX);
+/*
 				snake[i].changeLocationX = snake[i].x;
 				snake[i].changeLocationY = snake[i].y;		
 				snake[i-1].changeLocationX = null;
 				snake[i-1].changeLocationY = null;
+*/
 			}
 		}
 	}
@@ -147,9 +171,18 @@ function player_collide_dot(){
 	newtail.setVelocityX(snake[snake.length-1].body.velocity.x);
 	newtail.setVelocityY(snake[snake.length-1].body.velocity.y);
 
+	newtail.turnLocations = [];
+
 	snake.push(newtail);
 }
 function track_movements(){
+	//check if first movement
+	var firstMove = false;
+	if(player.body.velocity.x == 0 && player.body.velocity.y == 0)
+	{
+		firstMove = true;
+	}
+
 	if (gameOver)
     {
         return;
@@ -180,10 +213,17 @@ function track_movements(){
 		player.setVelocityX(0);
     }
 
-	if(changed_velocity){
+	if(changed_velocity && !firstMove && snake.length > 1){
+
+		player.turnLocations.push({"x": player.x, "y": player.y, "velocityX": player.body.velocity.x, "velocityY": player.body.velocity.y});
+
+		var numOfTurns = player.turnLocations.length;
+		/*
 		player.changeLocationX = player.x;
-		player.changeLocationY = player.y;		
-		console.log("Changed Velocity | X: "+ player.changeLocationX + ", Y: "+ player.changeLocationY)
+		player.changeLocationY = player.y;
+		*/
+		console.log("Turns Queued: " + numOfTurns);
+		console.log("Changed Velocity | X: " + player.turnLocations[numOfTurns-1].x + ", Y: " + player.turnLocations[numOfTurns-1].y)
 	}
 
 }
