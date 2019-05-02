@@ -1,3 +1,5 @@
+let gameScene = new Phaser.Scene('Game');
+
 var config = {
     type: Phaser.AUTO,
     width: 800,
@@ -14,17 +16,19 @@ var config = {
         update: update
     }
 };
-var tail;
+
 var player;
 var dot;
 var cursors;
 var score = 0;
 var gameOver = false;
 var scoreText;
+var snekIsAlive = true;
 
 var snake = [];
 
 var game = new Phaser.Game(config);
+
 function preload ()
 {
     this.load.image('sky', 'assets/sky.png');
@@ -50,22 +54,29 @@ function create ()
     scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
 	
 	dot = this.physics.add.image(400, 300, 'star');
-	this.physics.add.overlap(player, dot, player_collide_dot, null, this);
-	
+	this.physics.add.overlap(player, dot, player_collide_dot, null, this);	
+
 }
-function update ()
-{
+function update()
+{	
+	if(!snekIsAlive)
+	{	
+		return;
+	}
+
 	track_movements();
 	if(dot == null){
 		dot = this.physics.add.image(Math.floor(Math.random() * 13) * 64, Math.floor(Math.random() * 10) * 64, 'star');
 		this.physics.add.overlap(player, dot, player_collide_dot, null, this);
 	}
+
 	//update tail positions
 	for(var i = 0; i < snake.length; ++i)
 	{
 		//snake[i].body.velocity.prevx = snake[i].body.velocity.x;
 		//snake[i].body.velocity.prevy = snake[i].body.velocity.y;
-		snake[i].body.prevVelocity = snake[i].body.velocity;		
+		console.log();
+		snake[i].body.prevVelocity = snake[i].body.velocity;
 		if(i != 0)
 		{
 			var is_closeX = snake[i].body.velocity.y == 0 && snake[i].x <= (snake[i-1].changeLocationX+3) && snake[i].x >= (snake[i-1].changeLocationX-3); 
@@ -108,6 +119,7 @@ function update ()
 		}
 	}
 }
+
 function getYPadding(snake_element){
 	if(snake_element.body.velocity.y<0){
 		return 40;
@@ -143,11 +155,49 @@ function player_collide_dot(){
 
 	newtail = this.physics.add.sprite(leaderx+getXPadding(snake[snake.length-1]), leadery+getYPadding(snake[snake.length-1]), 'star');
 
+	this.physics.add.overlap(player, newtail, player_collide_tail, null, this);
+
 	//set velocity of newtail to the velocity of the previous tail
 	newtail.setVelocityX(snake[snake.length-1].body.velocity.x);
 	newtail.setVelocityY(snake[snake.length-1].body.velocity.y);
 
 	snake.push(newtail);
+}
+function player_collide_tail()
+{	
+	if(!snekIsAlive){return;}
+
+	gameOver = true;
+	snekIsAlive = false;
+	console.log("game over");
+
+	// shake the camera
+	this.cameras.main.shake(500);
+
+	//fade camera
+	this.time.delayedCall(250, function() {
+    	this.cameras.main.fade(350);
+	}, [], this);
+
+	for(var i = 0; i < snake.length; ++i)
+	{
+		snake[i].destroy();
+	}
+
+	// restart game
+	this.time.delayedCall(600, function() {
+		this.registry.destroy();
+		this.events.off();
+		this.scene.restart();
+		resetGame();
+	}, [], this);
+}
+function resetGame()
+{
+	snake = [];
+
+	gameOver = false;
+	snekIsAlive = true;
 }
 function track_movements(){
 	if (gameOver)
@@ -155,35 +205,34 @@ function track_movements(){
         return;
     }
 	var changed_velocity = false;
-	if (cursors.left.isDown && player.body.velocity.x != -180)
+	if (!gameOver && cursors.left.isDown && player.body.velocity.x != -180)
     {
 		changed_velocity=true;	
 		player.setVelocityX(-180);
 		player.setVelocityY(0);
    	}
-    else if (cursors.right.isDown && player.body.velocity.x != 180)
+    else if (!gameOver && cursors.right.isDown && player.body.velocity.x != 180)
     {
 		changed_velocity=true;
 		player.setVelocityX(180);
 		player.setVelocityY(0);
     }
-	else if (cursors.up.isDown && player.body.velocity.y != -180)
+	else if (!gameOver && cursors.up.isDown && player.body.velocity.y != -180)
     {
    		changed_velocity=true;
 		player.setVelocityY(-180);
 		player.setVelocityX(0);
     }   
-	else if (cursors.down.isDown && player.body.velocity.y != 180)
+	else if (!gameOver && cursors.down.isDown && player.body.velocity.y != 180)
     {
    		changed_velocity=true;
 		player.setVelocityY(180);
 		player.setVelocityX(0);
     }
 
-	if(changed_velocity){
+	if(!gameOver && changed_velocity){
 		player.changeLocationX = player.x;
 		player.changeLocationY = player.y;		
-		console.log("Changed Velocity | X: "+ player.changeLocationX + ", Y: "+ player.changeLocationY)
+		console.log("Changed Velocity | X: "+ player.changeLocationX + ", Y: "+ player.changeLocationY);
 	}
-
 }
