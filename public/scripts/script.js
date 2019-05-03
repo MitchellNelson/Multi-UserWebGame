@@ -25,6 +25,8 @@ var gameOver = false;
 var scoreText;
 var snekIsAlive = true;
 
+var prevKey = 0;
+
 var snake = [];
 
 var game = new Phaser.Game(config);
@@ -32,7 +34,7 @@ var game = new Phaser.Game(config);
 function preload ()
 {
     this.load.image('sky', 'assets/sky.png');
-    this.load.image('ground', 'assets/platform.png');
+    this.load.image('ground', 'assets/grass.jpg');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('dude', 'assets/bomb.png', { frameWidth: 32, frameHeight: 48 });
@@ -40,22 +42,28 @@ function preload ()
 
 function create ()
 {
-    this.add.image(400, 300, 'sky');
+    this.add.image(400, 300, 'ground').setScale(2.7,2.5);
+
+    //set worldbounds to ground area
+    let bounds = this.physics.world.setBounds(30, 32, 740, 536, true, true, true, true);
 
 	player = this.physics.add.sprite(100, 450, 'dude');
 
     player.setCollideWorldBounds(true);
 	player.onWorldBounds = true;
+
 	snake.push(player);
+
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
 
     //  The score
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    scoreText = this.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
 	
 	dot = this.physics.add.image(400, 300, 'star');
 	this.physics.add.overlap(player, dot, player_collide_dot, null, this);	
 
+	//this.physics.add.overlap(player, bounds, player_collide_enemy, null, this);
 }
 function update()
 {	
@@ -66,7 +74,7 @@ function update()
 
 	track_movements();
 	if(dot == null){
-		dot = this.physics.add.image(Math.floor(Math.random() * 13) * 64, Math.floor(Math.random() * 10) * 64, 'star');
+		dot = this.physics.add.image((Math.random() * 710) + 30, (Math.random() * 502) + 32, 'star');
 		this.physics.add.overlap(player, dot, player_collide_dot, null, this);
 	}
 
@@ -155,7 +163,7 @@ function player_collide_dot(){
 
 	newtail = this.physics.add.sprite(leaderx+getXPadding(snake[snake.length-1]), leadery+getYPadding(snake[snake.length-1]), 'star');
 
-	this.physics.add.overlap(player, newtail, player_collide_tail, null, this);
+	this.physics.add.overlap(player, newtail, player_collide_enemy, null, this);
 
 	//set velocity of newtail to the velocity of the previous tail
 	newtail.setVelocityX(snake[snake.length-1].body.velocity.x);
@@ -163,7 +171,7 @@ function player_collide_dot(){
 
 	snake.push(newtail);
 }
-function player_collide_tail()
+function player_collide_enemy()
 {	
 	if(!snekIsAlive){return;}
 
@@ -205,31 +213,35 @@ function track_movements(){
         return;
     }
 	var changed_velocity = false;
-	if (!gameOver && cursors.left.isDown && player.body.velocity.x != -180)
+	if (prevKey != 1 && cursors.left.isDown && player.body.velocity.x != -180)
     {
+    	prevKey = 1;
 		changed_velocity=true;	
 		player.setVelocityX(-180);
 		player.setVelocityY(0);
+
    	}
-    else if (!gameOver && cursors.right.isDown && player.body.velocity.x != 180)
+    else if (prevKey != 2 && cursors.right.isDown && player.body.velocity.x != 180)
     {
+    	prevKey = 2;
 		changed_velocity=true;
 		player.setVelocityX(180);
 		player.setVelocityY(0);
     }
-	else if (!gameOver && cursors.up.isDown && player.body.velocity.y != -180)
+	else if (prevKey != 3 && cursors.up.isDown && player.body.velocity.y != -180)
     {
+    	prevKey = 3;
    		changed_velocity=true;
 		player.setVelocityY(-180);
 		player.setVelocityX(0);
     }   
-	else if (!gameOver && cursors.down.isDown && player.body.velocity.y != 180)
+	else if (prevKey != 4 && cursors.down.isDown && player.body.velocity.y != 180)
     {
+    	prevKey = 4;
    		changed_velocity=true;
 		player.setVelocityY(180);
 		player.setVelocityX(0);
     }
-
 	if(!gameOver && changed_velocity){
 		player.changeLocationX = player.x;
 		player.changeLocationY = player.y;		
