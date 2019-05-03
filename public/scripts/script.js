@@ -1,3 +1,5 @@
+let gameScene = new Phaser.Scene('Game');
+
 var config = {
     type: Phaser.AUTO,
     width: 800,
@@ -14,21 +16,25 @@ var config = {
         update: update
     }
 };
-var tail;
+
 var player;
 var dot;
 var cursors;
 var score = 0;
 var gameOver = false;
 var scoreText;
+var snekIsAlive = true;
+
+var prevKey = 0;
 
 var snake = [];
 
 var game = new Phaser.Game(config);
+
 function preload ()
 {
     this.load.image('sky', 'assets/sky.png');
-    this.load.image('ground', 'assets/platform.png');
+    this.load.image('ground', 'assets/grass.jpg');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('dude', 'assets/bomb.png', { frameWidth: 32, frameHeight: 48 });
@@ -36,39 +42,51 @@ function preload ()
 
 function create ()
 {
-    this.add.image(400, 300, 'sky');
+    this.add.image(400, 300, 'ground').setScale(2.7,2.5);
+
+    //set worldbounds to ground area
+    let bounds = this.physics.world.setBounds(30, 32, 740, 536, true, true, true, true);
 
 	player = this.physics.add.sprite(100, 450, 'dude');
 	player.changeLocationX=null;
 	player.changeLocationY=null;
     player.setCollideWorldBounds(true);
 	player.onWorldBounds = true;
+
 	snake.push(player);
+
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
 
     //  The score
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    scoreText = this.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
 	
 	dot = this.physics.add.image(400, 300, 'star');
-	this.physics.add.overlap(player, dot, player_collide_dot, null, this);
-	
+	this.physics.add.overlap(player, dot, player_collide_dot, null, this);	
+
+	//this.physics.add.overlap(player, bounds, player_collide_enemy, null, this);
 }
-function update ()
-{
-	
+function update()
+{	
+	if(!snekIsAlive)
+	{	
+		return;
+	}
 	follow();
 	track_movements();
 	if(dot == null){
-		dot = this.physics.add.image(Math.floor(Math.random() * 13) * 64, Math.floor(Math.random() * 10) * 64, 'star');
+		dot = this.physics.add.image((Math.random() * 710) + 30, (Math.random() * 502) + 32, 'star');
 		this.physics.add.overlap(player, dot, player_collide_dot, null, this);
 	}
-
 }
 function follow(){
+	//update tail positions
 	for(var i = 0; i < snake.length; ++i)
 	{
-		snake[i].body.prevVelocity = snake[i].body.velocity;		
+		//snake[i].body.velocity.prevx = snake[i].body.velocity.x;
+		//snake[i].body.velocity.prevy = snake[i].body.velocity.y;
+		console.log();
+		snake[i].body.prevVelocity = snake[i].body.velocity;
 		if(i != 0)
 		{
 			var is_closeX = snake[i].body.velocity.y == 0 && snake[i].x <= (snake[i-1].changeLocationX+5) && snake[i].x >= (snake[i-1].changeLocationX-5); 
@@ -102,8 +120,8 @@ function follow(){
 			}
 		}
 	}
-
 }
+
 function getYPadding(snake_element){
 	if(snake_element.body.velocity.y<0){
 		return 40;
@@ -139,11 +157,49 @@ function player_collide_dot(){
 
 	newtail = this.physics.add.sprite(leaderx+getXPadding(snake[snake.length-1]), leadery+getYPadding(snake[snake.length-1]), 'star');
 
+	this.physics.add.overlap(player, newtail, player_collide_enemy, null, this);
+
 	//set velocity of newtail to the velocity of the previous tail
 	newtail.setVelocityX(snake[snake.length-1].body.velocity.x);
 	newtail.setVelocityY(snake[snake.length-1].body.velocity.y);
 
 	snake.push(newtail);
+}
+function player_collide_enemy()
+{	
+	if(!snekIsAlive){return;}
+
+	gameOver = true;
+	snekIsAlive = false;
+	console.log("game over");
+
+	// shake the camera
+	this.cameras.main.shake(500);
+
+	//fade camera
+	this.time.delayedCall(250, function() {
+    	this.cameras.main.fade(350);
+	}, [], this);
+
+	for(var i = 0; i < snake.length; ++i)
+	{
+		snake[i].destroy();
+	}
+
+	// restart game
+	this.time.delayedCall(600, function() {
+		this.registry.destroy();
+		this.events.off();
+		this.scene.restart();
+		resetGame();
+	}, [], this);
+}
+function resetGame()
+{
+	snake = [];
+
+	gameOver = false;
+	snekIsAlive = true;
 }
 function track_movements(){
 	if (gameOver)
@@ -151,41 +207,46 @@ function track_movements(){
         return;
     }
 	var changed_velocity = false;
+
 	if(snake.length==1){//only head
 		player.changeLocationX =null;
 		player.changeLocationY = null;	
 	}
 	if(player.changeLocationX == null && player.changeLocationY ==null){
-		if (cursors.left.isDown && player.body.velocity.x ==0)
+
+		if (prevKey != 1 && cursors.left.isDown && player.body.velocity.x == 0)
 		{
+			prevKey = 1;
 			changed_velocity=true;	
 			player.setVelocityX(-180);
 			player.setVelocityY(0);
+
 		}
-		else if (cursors.right.isDown && player.body.velocity.x ==0)
+		else if (prevKey != 2 && cursors.right.isDown && player.body.velocity.x ==0)
 		{
+			prevKey = 2;
 			changed_velocity=true;
 			player.setVelocityX(180);
 			player.setVelocityY(0);
 		}
-		else if (cursors.up.isDown && player.body.velocity.y ==0)
+		else if (prevKey != 3 && cursors.up.isDown && player.body.velocity.y ==0)
 		{
+			prevKey = 3;
 			changed_velocity=true;
 			player.setVelocityY(-180);
 			player.setVelocityX(0);
 		}   
-		else if (cursors.down.isDown && player.body.velocity.y ==0)
+		else if (prevKey != 4 && cursors.down.isDown && player.body.velocity.y ==0)
 		{
+			prevKey = 4;
 			changed_velocity=true;
 			player.setVelocityY(180);
 			player.setVelocityX(0);
 		}
-
-		if(changed_velocity){
+		if(!gameOver && changed_velocity){
 			player.changeLocationX = player.x;
 			player.changeLocationY = player.y;		
-	   
-			console.log("Changed Velocity | X: "+ player.changeLocationX + ", Y: "+ player.changeLocationY)
+			console.log("Changed Velocity | X: "+ player.changeLocationX + ", Y: "+ player.changeLocationY);
 		}
 	}
 }
