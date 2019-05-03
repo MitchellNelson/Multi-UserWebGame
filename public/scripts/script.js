@@ -39,7 +39,8 @@ function create ()
     this.add.image(400, 300, 'sky');
 
 	player = this.physics.add.sprite(100, 450, 'dude');
-
+	player.changeLocationX=null;
+	player.changeLocationY=null;
     player.setCollideWorldBounds(true);
 	player.onWorldBounds = true;
 	snake.push(player);
@@ -55,22 +56,24 @@ function create ()
 }
 function update ()
 {
+	
+	follow();
 	track_movements();
 	if(dot == null){
 		dot = this.physics.add.image(Math.floor(Math.random() * 13) * 64, Math.floor(Math.random() * 10) * 64, 'star');
 		this.physics.add.overlap(player, dot, player_collide_dot, null, this);
 	}
-	//update tail positions
+
+}
+function follow(){
 	for(var i = 0; i < snake.length; ++i)
 	{
-		//snake[i].body.velocity.prevx = snake[i].body.velocity.x;
-		//snake[i].body.velocity.prevy = snake[i].body.velocity.y;
 		snake[i].body.prevVelocity = snake[i].body.velocity;		
 		if(i != 0)
 		{
-			var is_closeX = snake[i].body.velocity.y == 0 && snake[i].x <= (snake[i-1].changeLocationX+3) && snake[i].x >= (snake[i-1].changeLocationX-3); 
+			var is_closeX = snake[i].body.velocity.y == 0 && snake[i].x <= (snake[i-1].changeLocationX+5) && snake[i].x >= (snake[i-1].changeLocationX-5); 
 			
-			var is_closeY = snake[i].body.velocity.x == 0 && snake[i].y <= (snake[i-1].changeLocationY+3) && snake[i].y >= (snake[i-1].changeLocationY-3); 
+			var is_closeY = snake[i].body.velocity.x == 0 && snake[i].y <= (snake[i-1].changeLocationY+5) && snake[i].y >= (snake[i-1].changeLocationY-5); 
 			if(is_closeX){
 				console.log("Tail changing X velocity")
 
@@ -79,10 +82,6 @@ function update ()
 				snake[i].body.setVelocityX(snake[i-1].body.prevVelocity.x);
 				snake[i].body.setVelocityY(snake[i-1].body.prevVelocity.y);
 
-				//snake[i].setVelocityY(snake[i-1].body.velocity.prevy);
-				//snake[i].setVelocityX(0);
-
-				//set changed location for the next element
 				snake[i].changeLocationX = snake[i].x;
 				snake[i].changeLocationY = snake[i].y;		
 				snake[i-1].changeLocationX = null;
@@ -96,10 +95,6 @@ function update ()
 				snake[i].body.setVelocityX(snake[i-1].body.prevVelocity.x);
 				snake[i].body.setVelocityY(snake[i-1].body.prevVelocity.y);
 
-			//	snake[i].setVelocityX(snake[i-1].body.velocity.prevx);
-			//	snake[i].setVelocityY(0);
-
-				//set changed location for the next element
 				snake[i].changeLocationX = snake[i].x;
 				snake[i].changeLocationY = snake[i].y;		
 				snake[i-1].changeLocationX = null;
@@ -107,6 +102,7 @@ function update ()
 			}
 		}
 	}
+
 }
 function getYPadding(snake_element){
 	if(snake_element.body.velocity.y<0){
@@ -155,35 +151,41 @@ function track_movements(){
         return;
     }
 	var changed_velocity = false;
-	if (cursors.left.isDown && player.body.velocity.x != -180)
-    {
-		changed_velocity=true;	
-		player.setVelocityX(-180);
-		player.setVelocityY(0);
-   	}
-    else if (cursors.right.isDown && player.body.velocity.x != 180)
-    {
-		changed_velocity=true;
-		player.setVelocityX(180);
-		player.setVelocityY(0);
-    }
-	else if (cursors.up.isDown && player.body.velocity.y != -180)
-    {
-   		changed_velocity=true;
-		player.setVelocityY(-180);
-		player.setVelocityX(0);
-    }   
-	else if (cursors.down.isDown && player.body.velocity.y != 180)
-    {
-   		changed_velocity=true;
-		player.setVelocityY(180);
-		player.setVelocityX(0);
-    }
-
-	if(changed_velocity){
-		player.changeLocationX = player.x;
-		player.changeLocationY = player.y;		
-		console.log("Changed Velocity | X: "+ player.changeLocationX + ", Y: "+ player.changeLocationY)
+	if(snake.length==1){//only head
+		player.changeLocationX =null;
+		player.changeLocationY = null;	
 	}
+	if(player.changeLocationX == null && player.changeLocationY ==null){
+		if (cursors.left.isDown && player.body.velocity.x ==0)
+		{
+			changed_velocity=true;	
+			player.setVelocityX(-180);
+			player.setVelocityY(0);
+		}
+		else if (cursors.right.isDown && player.body.velocity.x ==0)
+		{
+			changed_velocity=true;
+			player.setVelocityX(180);
+			player.setVelocityY(0);
+		}
+		else if (cursors.up.isDown && player.body.velocity.y ==0)
+		{
+			changed_velocity=true;
+			player.setVelocityY(-180);
+			player.setVelocityX(0);
+		}   
+		else if (cursors.down.isDown && player.body.velocity.y ==0)
+		{
+			changed_velocity=true;
+			player.setVelocityY(180);
+			player.setVelocityX(0);
+		}
 
+		if(changed_velocity){
+			player.changeLocationX = player.x;
+			player.changeLocationY = player.y;		
+	   
+			console.log("Changed Velocity | X: "+ player.changeLocationX + ", Y: "+ player.changeLocationY)
+		}
+	}
 }
