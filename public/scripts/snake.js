@@ -4,6 +4,7 @@ var config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
+    parent: "snakeGame",
     physics: {
         default: 'arcade',
         arcade: {
@@ -26,10 +27,25 @@ var scoreText;
 var snekIsAlive = true;
 
 var prevKey = 0;
-
 var snake = [];
 
 var game = new Phaser.Game(config);
+
+
+var app;
+
+function init()
+{
+	app = new Vue({
+		el: "#app",
+		data: {
+			difficulty: 1,
+			difficulties: ["Mobile Gamer", "Console Gamer", "PC gamer", "Apex Gamer"],
+			diffSpeeds: [150, 400, 800, 2000] 
+		}
+	});
+}
+
 
 function preload ()
 {
