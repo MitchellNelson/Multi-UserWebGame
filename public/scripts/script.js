@@ -197,6 +197,7 @@ function player_collide_enemy()
 function resetGame()
 {
 	snake = [];
+	score = 0;
 
 	gameOver = false;
 	snekIsAlive = true;
