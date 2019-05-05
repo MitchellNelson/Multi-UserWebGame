@@ -12,29 +12,21 @@
     </head>
     <body>
     	<h1 id="gameTitle">Welcome to the Snake Game</h1>
-    	<h1>Login</h1>
+    	<h1>Create New Account</h1>
 		<div id="app">
 			<form>
-				<input type="text" id="username" class="fadeIn second" name="username" placeholder="Username"><br/>
-			    <input type="text" id="password" class="fadeIn third" name="password" placeholder="password"><br/>
+				<input type="text" id="username" class="fadeIn second" name="Username" placeholder="Username"><br/>
+			    <input type="text" id="password" class="fadeIn third" name="password" placeholder="Password"><br/>
+			    <input type="text" id="confirmPassword" class="fadeIn third" name="confirmPassword" placeholder="Confirm Password"><br/>
+			    Profile Picture Number: 
+			    <input type="Number" id="profilePicNum" class="fadeIn third" name="profilepicNum" placeholder="Profile Picture Number" min="1" max="16" step="1" value="1"/> <br/>
+
+			    <div id="profilePics">
+			    	profile options displayed here
+
+			    </div>
 			    <input type="submit" class="fadeIn fourth" value="Log In"><br/>
 			</form>	
-
-			<p> New User? <br/> <button onclick="openNewUserPage()">Click Me</button> </p>
-
-			<h1> Leaderboards </h1>
-			<div>
-				<table id="leaderTable">
-					<tr>
-						<th> Username </th>
-						<th> Highscore </th>
-						<th> Games Played </th>
-						<th> Time Played </th>
-						<th> Apples per Game </th>
-					</tr>
-
-				</table>
-			</div>
 		</div>
 	</body>
 </html>

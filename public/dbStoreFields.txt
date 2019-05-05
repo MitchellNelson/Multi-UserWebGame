@@ -1,0 +1,9 @@
+Username
+H(password)
+sessionID??
+profile picture num
+
+total games played
+total time played
+total apples eaten
+high score
