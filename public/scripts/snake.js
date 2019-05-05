@@ -18,6 +18,10 @@ var config = {
     }
 };
 
+
+/* TODO:
+	teleport tail back to one in front if gets too far away
+*/
 var player;
 var dot;
 var cursors;
@@ -109,7 +113,7 @@ function update()
 	follow();
 	track_movements();
 	if(dot == null){
-		dot = this.physics.add.image((Math.random() * 710) + 30, (Math.random() * 502) + 32, 'star');
+		dot = this.physics.add.image((Math.random() * 708) + 30, (Math.random() * 500) + 32, 'star');
 		this.physics.add.overlap(player, dot, player_collide_dot, null, this);
 	}
 }
