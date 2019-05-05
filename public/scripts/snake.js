@@ -26,6 +26,7 @@ var gameOver = false;
 var scoreText;
 var snekIsAlive = true;
 
+var prevDifficulty = 1
 var prevKey = 0;
 var snake = [];
 
@@ -41,11 +42,14 @@ function init()
 		data: {
 			difficulty: 1,
 			difficulties: ["Mobile Gamer", "Console Gamer", "PC gamer", "Apex Gamer"],
-			diffSpeeds: [150, 400, 800, 2000] 
+			diffSpeeds: [150, 250, 500, 800] 
 		}
 	});
 }
-
+function changeDifficulty(newDiff)
+{
+	app.difficulty = newDiff;
+}
 
 function preload ()
 {
@@ -84,6 +88,20 @@ function create ()
 }
 function update()
 {	
+	//reset game when difficulty changed
+	if(prevDifficulty != app.difficulty)
+	{
+		prevDifficulty = app.difficulty;
+
+		// restart game
+		this.time.delayedCall(1, function() {
+			this.registry.destroy();
+			this.events.off();
+			this.scene.restart();
+			resetGame();
+		}, [], this);
+	}
+
 	if(!snekIsAlive)
 	{	
 		return;
@@ -212,6 +230,7 @@ function player_collide_enemy()
 }
 function resetGame()
 {
+	console.log("resetting game");
 	snake = [];
 
 	gameOver = false;
@@ -223,6 +242,7 @@ function track_movements(){
         return;
     }
 	var changed_velocity = false;
+	var speed = app.diffSpeeds[app.difficulty];
 
 	if(snake.length==1){//only head
 		player.changeLocationX =null;
@@ -234,7 +254,7 @@ function track_movements(){
 		{
 			prevKey = 1;
 			changed_velocity=true;	
-			player.setVelocityX(-180);
+			player.setVelocityX(speed * -1);
 			player.setVelocityY(0);
 
 		}
@@ -242,27 +262,27 @@ function track_movements(){
 		{
 			prevKey = 2;
 			changed_velocity=true;
-			player.setVelocityX(180);
+			player.setVelocityX(speed);
 			player.setVelocityY(0);
 		}
 		else if (prevKey != 3 && cursors.up.isDown && player.body.velocity.y ==0)
 		{
 			prevKey = 3;
 			changed_velocity=true;
-			player.setVelocityY(-180);
+			player.setVelocityY(speed * -1);
 			player.setVelocityX(0);
 		}   
 		else if (prevKey != 4 && cursors.down.isDown && player.body.velocity.y ==0)
 		{
 			prevKey = 4;
 			changed_velocity=true;
-			player.setVelocityY(180);
+			player.setVelocityY(speed);
 			player.setVelocityX(0);
 		}
 		if(!gameOver && changed_velocity){
 			player.changeLocationX = player.x;
 			player.changeLocationY = player.y;		
-			console.log("Changed Velocity | X: "+ player.changeLocationX + ", Y: "+ player.changeLocationY);
+			//console.log("Changed Velocity | X: "+ player.changeLocationX + ", Y: "+ player.changeLocationY);
 		}
 	}
 }

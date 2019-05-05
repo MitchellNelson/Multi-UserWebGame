@@ -7,7 +7,23 @@ Table Users
 
 Stats Table
 		Username
-		total games played
-		total time played
-		total apples eaten
-		high score
+			Mobile Gamer stats
+				total games played
+				total time played
+				total apples eaten
+				high score
+			Console Gamer stats
+				total games played
+				total time played
+				total apples eaten
+				high score
+			PC Gamer stats
+				total games played
+				total time played
+				total apples eaten
+				high score
+			Apex Gamer stats
+				total games played
+				total time played
+				total apples eaten
+				high score
