@@ -141,7 +141,7 @@ app.post('/newuser', function (req, res) {
 	var form = new multiparty.Form();
 	form.parse(req, function(err, fields) {
 		console.log(fields);
-		if(fields.password[0] == fields.confirmPassword[0]){//passwords match
+		if(fields.password[0] == fields.confirmPassword[0] && fields.username[0]!=null && fields.passwords[0]!=null){//passwords match
 			db.run('INSERT INTO users (username, password, avatar, high_score) VALUES (?,?,?,?)', 
 			[fields.username[0], md5(fields.password[0]), "/assets/profile_pictures/profile"+fields.profilepicNum[0]+".jpg", 0], (err, rows) =>{
 				if (err){
