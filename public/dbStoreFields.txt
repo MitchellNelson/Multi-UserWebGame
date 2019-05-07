@@ -1,0 +1,29 @@
+
+Table Users
+		Username
+		H(password)
+		sessionID??
+		profile picture num
+
+Stats Table
+		Username
+			Mobile Gamer stats
+				total games played
+				total time played
+				total apples eaten
+				high score
+			Console Gamer stats
+				total games played
+				total time played
+				total apples eaten
+				high score
+			PC Gamer stats
+				total games played
+				total time played
+				total apples eaten
+				high score
+			Apex Gamer stats
+				total games played
+				total time played
+				total apples eaten
+				high score

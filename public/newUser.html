@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>Login</title>
+        <script type="application/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="styles/login.css"/>
+ 		<script type="application/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
+		<script type="application/javascript" src="scripts/newUser.js"></script>
+    </head>
+    <body>
+    	<h1 id="gameTitle">Welcome to the Snake Game</h1>
+    	<h1>Create New Account</h1>
+		<div id="app">
+			<form>
+				<input type="text" id="username" class="fadeIn second" name="Username" placeholder="Username"><br/>
+			    <input type="text" id="password" class="fadeIn third" name="password" placeholder="Password"><br/>
+			    <input type="text" id="confirmPassword" class="fadeIn third" name="confirmPassword" placeholder="Confirm Password"><br/>
+			    Profile Picture Number: 
+			    <input type="Number" id="profilePicNum" class="fadeIn third" name="profilepicNum" placeholder="Profile Picture Number" min="1" max="16" step="1" value="1"/> <br/>
+			    <input type="submit" class="fadeIn fourth" value="Create Account"><br/>
+
+			    <div id="profilePics">
+			    	<table class="profilepicRow">
+			    		<tr>
+			    			<td>1</td>
+			    			<td>2</td>
+			    			<td>3</td>
+			    			<td>4</td>
+			    		</tr>
+			    		<tr>
+			    			<td><img src="assets/profile_pictures/profile1.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile2.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile3.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile4.jpg"/></td>
+			    		</tr>
+			    	</table>
+			    	<table class="profilepicRow">
+			    		<tr>
+			    			<td>5</td>
+			    			<td>6</td>
+			    			<td>7</td>
+			    			<td>8</td>
+			    		</tr>
+			    		<tr>
+			    			<td><img src="assets/profile_pictures/profile5.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile6.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile7.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile8.jpg"/></td>
+			    		</tr>
+			    	</table>
+			    	<table class="profilepicRow">
+			    		<tr>
+			    			<td>9</td>
+			    			<td>10</td>
+			    			<td>11</td>
+			    			<td>12</td>
+			    		</tr>
+			    		<tr>
+			    			<td><img src="assets/profile_pictures/profile9.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile10.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile11.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile12.jpg"/></td>
+			    		</tr>
+			    	</table>
+			    	<table class="profilepicRow" style="border: none">
+			    		<tr>
+			    			<td>13</td>
+			    			<td>14</td>
+			    			<td>15</td>
+			    			<td>16</td>
+			    		</tr>
+			    		<tr>
+			    			<td><img src="assets/profile_pictures/profile13.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile14.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile15.jpg"/></td>
+			    			<td><img src="assets/profile_pictures/profile16.jpg"/></td>
+			    		</tr>
+			    	</table>
+			    </div>
+			</form>	
+		</div>
+	</body>
+</html>
