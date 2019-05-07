@@ -29,7 +29,20 @@
 					<button onclick="changeDifficulty(3)"> Apex Gamer </button>
 				</ul>
 			</div>
-
+			<table id="leaderTable">
+				<tr>
+					<th> Username </th>
+					<th> Highscore </th>
+					<th> Games Played </th>
+					<th> Time Played </th>
+					<th> Apples per Game </th>
+				</tr>
+					<tr v-for="item in users_json">
+						<td>{{item.username}} </td>
+						<td>{{item.high_score}} </td>
+						<td>{{item.avatar}} </td>
+					</tr>
+			</table>
 		</div>
 	</body>
 </html>
