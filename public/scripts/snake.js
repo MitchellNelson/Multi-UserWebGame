@@ -59,9 +59,10 @@ function preload ()
 {
     this.load.image('sky', 'assets/sky.png');
     this.load.image('ground', 'assets/grass.jpg');
-    this.load.image('star', 'assets/star.png');
+    this.load.image('star', 'assets/apple.png');
     this.load.image('bomb', 'assets/bomb.png');
-    this.load.spritesheet('dude', 'assets/bomb.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('tail', 'assets/caterpillarbody.png');
+    this.load.spritesheet('caterpillar', 'assets/caterpillarhead.png', { frameWidth: 32, frameHeight: 48 });
 }
 
 function create ()
@@ -71,7 +72,7 @@ function create ()
     //set worldbounds to ground area
     let bounds = this.physics.world.setBounds(30, 32, 740, 536, true, true, true, true);
 
-	player = this.physics.add.sprite(100, 450, 'dude');
+	player = this.physics.add.sprite(100, 450, 'caterpillar');
 	player.changeLocationX=null;
 	player.changeLocationY=null;
     player.setCollideWorldBounds(true);
@@ -193,7 +194,7 @@ function player_collide_dot(){
 	leaderx = snake[snake.length-1].x;
 	leadery = snake[snake.length-1].y;
 
-	newtail = this.physics.add.sprite(leaderx+getXPadding(snake[snake.length-1]), leadery+getYPadding(snake[snake.length-1]), 'star');
+	newtail = this.physics.add.sprite(leaderx+getXPadding(snake[snake.length-1]), leadery+getYPadding(snake[snake.length-1]), 'tail');
 
 	this.physics.add.overlap(player, newtail, player_collide_enemy, null, this);
 
