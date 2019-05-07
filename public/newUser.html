@@ -14,10 +14,10 @@
     	<h1 id="gameTitle">Welcome to the Snake Game</h1>
     	<h1>Create New Account</h1>
 		<div id="app">
-			<form>
-				<input type="text" id="username" class="fadeIn second" name="Username" placeholder="Username"><br/>
-			    <input type="text" id="password" class="fadeIn third" name="password" placeholder="Password"><br/>
-			    <input type="text" id="confirmPassword" class="fadeIn third" name="confirmPassword" placeholder="Confirm Password"><br/>
+			<form action="/newuser" method="POST" enctype="multipart/form-data">
+				<input type="text" id="username" class="fadeIn second" name="username" placeholder="Username"><br/>
+			    <input type="password" id="password" class="fadeIn third" name="password" placeholder="Password"><br/>
+			    <input type="password" id="confirmPassword" class="fadeIn third" name="confirmPassword" placeholder="Confirm Password"><br/>
 			    Profile Picture Number: 
 			    <input type="Number" id="profilePicNum" class="fadeIn third" name="profilepicNum" placeholder="Profile Picture Number" min="1" max="16" step="1" value="1"/> <br/>
 			    <input type="submit" class="fadeIn fourth" value="Create Account"><br/>
