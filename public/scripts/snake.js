@@ -236,6 +236,7 @@ function resetGame()
 {
 	console.log("resetting game");
 	snake = [];
+	score = 0;
 
 	gameOver = false;
 	snekIsAlive = true;
