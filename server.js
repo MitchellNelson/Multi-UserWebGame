@@ -9,7 +9,7 @@ var session = require('express-session')
 var bodyParser = require('body-parser');
 
 var app = express();
-var port = 8002;
+var port = 8016;
 var db_filename = path.join(__dirname, '/db', 'gameDB.sqlite3');
 var public_dir = path.join(__dirname, 'public');
 
@@ -143,7 +143,7 @@ app.post('/newuser', function (req, res) {
 		console.log(fields);
 		if(fields.password[0] == fields.confirmPassword[0]){//passwords match
 			db.run('INSERT INTO users (username, password, avatar, high_score) VALUES (?,?,?,?)', 
-			[fields.username[0], md5(fields.password[0]), fields.profilepicNum[0], 0], (err, rows) =>{
+			[fields.username[0], md5(fields.password[0]), "/assets/profile_pictures/profile"+fields.profilepicNum[0]+".jpg", 0], (err, rows) =>{
 				if (err){
 					console.log(err);	
 				}

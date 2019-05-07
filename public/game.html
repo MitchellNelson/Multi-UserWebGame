@@ -31,18 +31,18 @@
 			</div>
 			<table id="leaderTable">
 				<tr>
+					<th> Avatar </th>
 					<th> Username </th>
 					<th> Highscore </th>
 					<th> Games Played </th>
 					<th> Apples Eaten </th>
-					<th> Avatar </th>
 				</tr>
 					<tr v-for="item in users_json">
+						<td><img width="50px" height="50px" :src="item.avatar"></td>
 						<td>{{item.username}} </td>
 						<td>{{item.high_score}} </td>
 						<td>{{item.games_played}}</td>
 						<td>{{item.apples_eaten}}</td>
-						<td>{{item.avatar}} </td>
 					</tr>
 			</table>
 		</div>

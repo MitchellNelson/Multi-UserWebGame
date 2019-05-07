@@ -262,7 +262,7 @@ function resetGame()
 	username = SendScores(score); 
 
 	score = 0;
-
+	GetScores('/scores');
 }
 function track_movements(){
 	if (gameOver)

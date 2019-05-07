@@ -18,6 +18,15 @@ h1{
 button{
 	font-size: 2rem;
 }
+table{
+	font-size:2rem;
+}
+td{
+	padding:1rem;
+}
+th{
+	padding:1rem;
+}
 #snakeGame{
 	text-align: center;
 }
@@ -26,3 +35,4 @@ button{
 	margin-top: 5rem;
 	text-align: center;
 }
+
