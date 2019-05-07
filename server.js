@@ -9,7 +9,7 @@ var session = require('express-session')
 var bodyParser = require('body-parser');
 
 var app = express();
-var port = 8016;
+var port = 8002;
 var db_filename = path.join(__dirname, '/db', 'gameDB.sqlite3');
 var public_dir = path.join(__dirname, 'public');
 
@@ -61,10 +61,10 @@ app.post('/stats', function(req, res){
 			highScore = rows[0].high_score;
 			gamesPlayed = rows[0].games_played;
 			applesEaten = rows[0].apples_eaten;
-			console.log("user: " + username + "  highscore: " + highScore + "  games played: " + gamesPlayed + "  apples eaten: " + applesEaten);
+			//console.log("user: " + username + "  highscore: " + highScore + "  games played: " + gamesPlayed + "  apples eaten: " + applesEaten);
 			if(highScore < score)
 			{
-				highScore = score;
+				highScore = parseInt(score, 10);
 			}
 			if( gamesPlayed == null )
 			{
@@ -76,11 +76,11 @@ app.post('/stats', function(req, res){
 			}
 			if( applesEaten == null )
 			{
-				applesEaten = score
+				applesEaten = parseInt(score, 10);
 			}
 			else
 			{
-				applesEaten = applesEaten + score;
+				applesEaten = applesEaten + parseInt(score, 10);
 			}	
 			//send new scores to db
 			db.run('UPDATE users SET high_score=? WHERE username=?', [highScore, username], (err, rows) =>{
@@ -109,7 +109,7 @@ app.post('/stats', function(req, res){
 			});
 
 
-			console.log("AFTER UPDATE: user: " + username + "  highscore: " + highScore + "  games played: " + gamesPlayed + "  apples eaten: " + applesEaten);
+			//console.log("AFTER UPDATE: user: " + username + "  highscore: " + highScore + "  games played: " + gamesPlayed + "  apples eaten: " + applesEaten);
 		}
 	});
 }); 
