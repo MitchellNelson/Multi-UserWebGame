@@ -46,9 +46,17 @@ function init()
 		data: {
 			difficulty: 1,
 			difficulties: ["Mobile Gamer", "Console Gamer", "PC gamer", "Apex Gamer"],
-			diffSpeeds: [150, 250, 500, 800] 
-			
+			diffSpeeds: [150, 250, 500, 800], 
+			users_json: null						
 		}
+	});
+	GetScores('/scores');
+}
+function GetScores(scores){
+	console.log("GetScores " + scores);
+	$.getJSON(scores).then((data) =>{
+		console.log(data);
+		app.users_json = data;
 	});
 }
 function changeDifficulty(newDiff)

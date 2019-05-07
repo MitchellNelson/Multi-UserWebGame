@@ -11,13 +11,7 @@ var port = 8016;
 var db_filename = path.join(__dirname, '/db', 'gameDB.sqlite3');
 var public_dir = path.join(__dirname, 'public');
 
-app.use(session({
-	secret: 'superRandomSecret',
-	resave: false,
-  	saveUninitialized: true,	
-}))
-
-var db = new sqlite3.Database(db_filename, sqlite3, (err) =>{
+var db = new sqlite3.Database(db_filename, (err) =>{
 	if (err){
 		console.log("Error opening " + db_filename);
 	}
@@ -25,6 +19,14 @@ var db = new sqlite3.Database(db_filename, sqlite3, (err) =>{
 		console.log("now connected to " + db_filename);
 	}
 });
+
+app.use(session({
+	secret: 'superRandomSecret',
+	resave: false,
+  	saveUninitialized: true,	
+}))
+
+
 var auth = function(req, res, next) {
 	
 	if (req.session && req.session.user != undefined && req.session.admin)
@@ -77,9 +79,26 @@ app.post('/newuser', function (req, res) {
 app.get('/game.html', auth, function (req, res) {
     console.log("in game");
 	console.log("req.session.user = " + req.session.user);
+	//res.json({"test":"hello"});
 	res.sendFile(__dirname + '/public/game.html');
 });
+app.get('/scores', function(req, res){
 
+	db.all('SELECT username, avatar, high_score FROM users ORDER BY high_score DESC LIMIT 10',(err, rows)=>{
+		if (err){
+			console.log(err);	
+		}
+		else{
+			console.log("in query");			
+			res.writeHead(200, {'Content-Type': 'application/json'});
+			res.write(JSON.stringify(rows));
+			
+			res.end();
+			console.log(JSON.stringify(rows));
+		}
+	});
+	//res.json({"test":"json"});
+});
 app.use(express.static(public_dir));
 
 var server = app.listen(port);
