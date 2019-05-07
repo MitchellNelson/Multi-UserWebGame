@@ -6,6 +6,8 @@ var fs = require('fs');
 var url = require('url');
 var md5 = require('md5');
 var session = require('express-session')
+var bodyParser = require('body-parser');
+
 var app = express();
 var port = 8016;
 var db_filename = path.join(__dirname, '/db', 'gameDB.sqlite3');
@@ -24,17 +26,97 @@ app.use(session({
 	secret: 'superRandomSecret',
 	resave: false,
   	saveUninitialized: true,	
-}))
+}));
+
+app.use( bodyParser.json() );
+app.use( bodyParser.urlencoded({extended: true}) );
 
 
 var auth = function(req, res, next) {
 	
-	if (req.session && req.session.user != undefined && req.session.admin)
-			return next();
-	    else
-			//go back to index if not logged in
-			res.redirect("index.html");
+	if (req.session && req.session.user != undefined && req.session.admin)	
+		return next();
+	else
+		//go back to index if not logged in
+		res.redirect("index.html");
 };
+
+
+
+app.post('/stats', function(req, res){
+	console.log("setting stats for: " + req.session.user);
+	console.log("user new score: " + req.body.score);
+	
+	username = req.session.user;
+	//check if new score is high score
+	db.all('SELECT * FROM users WHERE username = ?', [username], (err, rows) =>{
+		if (err){
+			console.log(err);
+		}
+		else
+		{
+			username = req.session.user;
+			score = req.body.score;
+
+			highScore = rows[0].high_score;
+			gamesPlayed = rows[0].games_played;
+			applesEaten = rows[0].apples_eaten;
+			console.log("user: " + username + "  highscore: " + highScore + "  games played: " + gamesPlayed + "  apples eaten: " + applesEaten);
+			if(highScore < score)
+			{
+				highScore = score;
+			}
+			if( gamesPlayed == null )
+			{
+				gamesPlayed = 1;
+			}
+			else
+			{
+				gamesPlayed = gamesPlayed + 1;
+			}
+			if( applesEaten == null )
+			{
+				applesEaten = score
+			}
+			else
+			{
+				applesEaten = applesEaten + score;
+			}	
+			//send new scores to db
+			db.run('UPDATE users SET high_score=? WHERE username=?', [highScore, username], (err, rows) =>{
+				if(err){
+					console.log(err);
+				}
+				else{
+					console.log("updated high score");
+				}
+			});
+			db.run('UPDATE users SET games_played=? WHERE username=?', [gamesPlayed, username], (err, rows) =>{
+				if(err){
+					console.log(err);
+				}
+				else{
+					console.log("updated games played");
+				}
+			});
+			db.run('UPDATE users SET apples_eaten=? WHERE username=?', [applesEaten, username], (err, rows) =>{
+				if(err){
+					console.log(err);
+				}
+				else{
+					console.log("updated apples eaten");
+				}
+			});
+
+
+			console.log("AFTER UPDATE: user: " + username + "  highscore: " + highScore + "  games played: " + gamesPlayed + "  apples eaten: " + applesEaten);
+		}
+	});
+}); 
+
+
+
+
 
 app.post('/login', function (req, res) {
 	var form = new multiparty.Form();
@@ -45,11 +127,11 @@ app.post('/login', function (req, res) {
 				console.log(err);	
 			}
 			else if (rows.length==1){//found user
-				console.log(rows);
+				//console.log(rows);
 				req.session.admin = true;
 				req.session.user = fields.username[0];
 				res.redirect('game.html');
-				console.log(JSON.stringify(rows));
+				//console.log(JSON.stringify(rows));
 			}
 		});
 	});
@@ -69,7 +151,7 @@ app.post('/newuser', function (req, res) {
 					req.session.admin = true;
 					req.session.user = fields.username[0];
 					res.redirect('game.html');
-					console.log(JSON.stringify(rows));
+					//console.log(JSON.stringify(rows));
 				}
 			});
 		}
@@ -77,14 +159,14 @@ app.post('/newuser', function (req, res) {
 })
 
 app.get('/game.html', auth, function (req, res) {
-    console.log("in game");
-	console.log("req.session.user = " + req.session.user);
+    //console.log("in game");
+	//console.log("req.session.user = " + req.session.user);
 	//res.json({"test":"hello"});
 	res.sendFile(__dirname + '/public/game.html');
 });
 app.get('/scores', function(req, res){
 
-	db.all('SELECT username, avatar, high_score FROM users ORDER BY high_score DESC LIMIT 10',(err, rows)=>{
+	db.all('SELECT username, avatar, high_score, games_played, apples_eaten  FROM users ORDER BY high_score DESC LIMIT 10',(err, rows)=>{
 		if (err){
 			console.log(err);	
 		}

@@ -57,8 +57,16 @@ function GetScores(scores){
 	$.getJSON(scores).then((data) =>{
 		console.log(data);
 		app.users_json = data;
+	}, 'json');
+}
+
+function SendScores(score){
+	console.log("Sending request to update stats");
+	$.post('/stats', {'score': score}, (result)=>{
+		console.log("requestresult: " + result);
 	});
 }
+
 function changeDifficulty(newDiff)
 {
 	app.difficulty = newDiff;
@@ -246,10 +254,15 @@ function resetGame()
 {
 	console.log("resetting game");
 	snake = [];
-	score = 0;
 
 	gameOver = false;
 	snekIsAlive = true;
+
+	//get username
+	username = SendScores(score); 
+
+	score = 0;
+
 }
 function track_movements(){
 	if (gameOver)

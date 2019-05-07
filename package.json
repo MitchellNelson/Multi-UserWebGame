@@ -9,6 +9,7 @@
     "repository": "https://github.com/nels4929/Multi-UserWebGame",
     "main": "server.js",
     "dependencies": {
+        "body-parser": "^1.19.0",
         "express": "^4.16.4",
         "express-session": "^1.16.1",
         "md5": "^2.2.1",

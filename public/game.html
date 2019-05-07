@@ -34,12 +34,14 @@
 					<th> Username </th>
 					<th> Highscore </th>
 					<th> Games Played </th>
-					<th> Time Played </th>
-					<th> Apples per Game </th>
+					<th> Apples Eaten </th>
+					<th> Avatar </th>
 				</tr>
 					<tr v-for="item in users_json">
 						<td>{{item.username}} </td>
 						<td>{{item.high_score}} </td>
+						<td>{{item.games_played}}</td>
+						<td>{{item.apples_eaten}}</td>
 						<td>{{item.avatar}} </td>
 					</tr>
 			</table>
