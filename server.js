@@ -37,7 +37,8 @@ var auth = function(req, res, next) {
 app.post('/login', function (req, res) {
 	var form = new multiparty.Form();
 	form.parse(req, function(err, fields) {
-		db.all('SELECT * FROM users WHERE username = ? AND password = ?', [fields.username[0], md5(fields.password[0])], (err, rows) =>{
+		db.all('SELECT * FROM users WHERE username = ? AND password = ?', 
+		[fields.username[0], md5(fields.password[0])], (err, rows) =>{
 			if (err){
 				console.log(err);	
 			}
@@ -57,7 +58,8 @@ app.post('/newuser', function (req, res) {
 	form.parse(req, function(err, fields) {
 		console.log(fields);
 		if(fields.password[0] == fields.confirmPassword[0]){//passwords match
-			db.run('INSERT INTO users (username, password, avatar, high_score) VALUES (?,?,?,?)', [fields.username[0], md5(fields.password[0]), fields.profilePicNum, 0], (err, rows) =>{
+			db.run('INSERT INTO users (username, password, avatar, high_score) VALUES (?,?,?,?)', 
+			[fields.username[0], md5(fields.password[0]), fields.profilepicNum[0], 0], (err, rows) =>{
 				if (err){
 					console.log(err);	
 				}
@@ -77,7 +79,6 @@ app.get('/game.html', auth, function (req, res) {
 	console.log("req.session.user = " + req.session.user);
 	res.sendFile(__dirname + '/public/game.html');
 });
-
 
 app.use(express.static(public_dir));
 

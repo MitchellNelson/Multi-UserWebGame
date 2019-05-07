@@ -47,6 +47,7 @@ function init()
 			difficulty: 1,
 			difficulties: ["Mobile Gamer", "Console Gamer", "PC gamer", "Apex Gamer"],
 			diffSpeeds: [150, 250, 500, 800] 
+			
 		}
 	});
 }
