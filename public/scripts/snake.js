@@ -49,6 +49,7 @@ function init()
 			diffSpeeds: [150, 250, 500, 800], 
 			users_json: null,						
 		    username: null,
+            avatar: null,
             player_num: null
         }
 	});
@@ -82,6 +83,7 @@ function SendMessage(){
 function GetUserName(){
     $.getJSON('/username').then((data)=>{
         app.username = data.username;
+        app.avatar = data.avatar;
     },'json');
 }
 function GetScores(scores){
@@ -175,18 +177,12 @@ function update()
     else if(player_num==2){
         track_movements(player2, snake2);
     }
-    /*if(dot == null && player_num == 1){//player 1's machine chooses new rancom apple spot
-
-        ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*708)+30, 'y':(Math.random()*500)+32}));
-        //dot = this.physics.add.image((Math.random() * 708) + 30, (Math.random() * 500) + 32, 'star');
-		//this.physics.add.overlap(player1, dot, player_collide_dot, null, this);
-	}*/
     if(dot==null){
          dot = this.physics.add.image(0, 0, 'star');
          this.physics.add.overlap(player1,dot,player_collide_dot,null,this);
          this.physics.add.overlap(player2,dot,player_collide_dot2,null,this);
          if(player_num == 1){
-            ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*708)+30, 'y':(Math.random()*500)+32}));
+            ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*708)+60, 'y':(Math.random()*500)+62}));
          }
     }
 }

@@ -15,10 +15,17 @@
 	<body onload="init()" style="margin: 5rem;">
     	<h1>Snake Game</h1>
 		<div id="app">
-			<div id="snakeGame">
-
-			</div>
-
+            <table style="width:800px">
+                <tr v-if="player_num == 1">
+                    <td><img width="50px" height="50px" :src="avatar">Player 1: {{username}}</td>
+                    <td style="float:right">Player 2: Opponent</td>
+                </tr>
+                <tr v-else>
+                    <td>Player 1: Opponent</td>
+                    <td style="float:right"><img width="50px" height="50px" :src="avatar">Player 2: {{username}}</td>
+                </tr>
+            </table>
+            <div id="snakeGame"></div>
 			<div id="difficultyButtons">
 				<h2> Select Difficulty: </h2>
 				<h3>Current Difficulty: <b>{{ difficulties[difficulty] }} </b></h3>

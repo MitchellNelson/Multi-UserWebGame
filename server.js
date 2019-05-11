@@ -159,7 +159,15 @@ app.post('/stats', function(req, res){
 }); 
 
 app.get('/username',function(req, res){
-    res.send({'username':req.session.user});
+    db.all('SELECT avatar FROM users WHERE username = ?', [req.session.user], (err, rows) =>{
+        if (err){
+            console.log(err);	
+        }
+        else{
+            console.log(rows[0].avatar);
+            res.send({'username': req.session.user, 'avatar':rows[0].avatar})	
+        }
+	});
 });
 
 
