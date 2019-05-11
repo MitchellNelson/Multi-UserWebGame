@@ -48,7 +48,8 @@ function init()
 			difficulties: ["Mobile Gamer", "Console Gamer", "PC gamer", "Apex Gamer"],
 			diffSpeeds: [150, 250, 500, 800], 
 			users_json: null,						
-		    username: null
+		    username: null,
+            player_num: null
         }
 	});
 	GetScores('/scores');
@@ -63,6 +64,7 @@ function init()
     	var message = JSON.parse(event.data);
 		if(message.msg === "client_count"){
 			player_num = message.data;
+            app.player_num = player_num;
 		}
         else if(message.msg === "move"){
             UpdateVelocity(message);
@@ -173,16 +175,19 @@ function update()
     else if(player_num==2){
         track_movements(player2, snake2);
     }
-    if(dot == null && player_num == 1){//player 1's machine chooses new rancom apple spot
+    /*if(dot == null && player_num == 1){//player 1's machine chooses new rancom apple spot
 
         ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*708)+30, 'y':(Math.random()*500)+32}));
         //dot = this.physics.add.image((Math.random() * 708) + 30, (Math.random() * 500) + 32, 'star');
 		//this.physics.add.overlap(player1, dot, player_collide_dot, null, this);
-	}
+	}*/
     if(dot==null){
-         dot = this.physics.add.image(400, 300, 'star');
+         dot = this.physics.add.image(0, 0, 'star');
          this.physics.add.overlap(player1,dot,player_collide_dot,null,this);
          this.physics.add.overlap(player2,dot,player_collide_dot2,null,this);
+         if(player_num == 1){
+            ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*708)+30, 'y':(Math.random()*500)+32}));
+         }
     }
 }
 
