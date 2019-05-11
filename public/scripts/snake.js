@@ -47,11 +47,12 @@ function init()
 			difficulty: 1,
 			difficulties: ["Mobile Gamer", "Console Gamer", "PC gamer", "Apex Gamer"],
 			diffSpeeds: [150, 250, 500, 800], 
-			users_json: null						
-		}
+			users_json: null,						
+		    username: null
+        }
 	});
 	GetScores('/scores');
-
+    GetUserName();
     var port = window.location.port || "80";
     ws = new WebSocket("ws://" + window.location.hostname + ":" + port);
     ws.onopen = (event) => {
@@ -72,8 +73,14 @@ function init()
         }
     };
 }
+
 function SendMessage(){
 	ws.send(app.new_message);
+}
+function GetUserName(){
+    $.getJSON('/username').then((data)=>{
+        app.username = data.username;
+    },'json');
 }
 function GetScores(scores){
 	console.log("GetScores " + scores);

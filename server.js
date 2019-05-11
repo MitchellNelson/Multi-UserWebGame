@@ -158,6 +158,9 @@ app.post('/stats', function(req, res){
 	});
 }); 
 
+app.get('/username',function(req, res){
+    res.send({'username':req.session.user});
+});
 
 
 
