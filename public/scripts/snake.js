@@ -54,6 +54,7 @@ function init()
         }
 	});
 	GetScores('/scores');
+
     GetUserName();
     var port = window.location.port || "80";
     ws = new WebSocket("ws://" + window.location.hostname + ":" + port);
@@ -91,7 +92,11 @@ function GetScores(scores){
 	$.getJSON(scores).then((data) =>{
 		console.log(data);
 		app.users_json = data;
-	}, 'json');
+/*        for(var i =0; i<app.users_json.length; i++){
+            app.users_json[i].show = true;
+        }*/
+    }, 'json');
+   
 }
 
 function SendScores(score){

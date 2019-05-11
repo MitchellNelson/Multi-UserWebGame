@@ -223,10 +223,14 @@ app.get('/scores', function(req, res){
 			console.log(err);	
 		}
 		else{
-			console.log("in query");			
-			res.writeHead(200, {'Content-Type': 'application/json'});
-			res.write(JSON.stringify(rows));
 			
+            console.log("in query");			
+			res.writeHead(200, {'Content-Type': 'application/json'});
+			for(var i =0; i < rows.length; i++){
+                rows[i].show=false;
+            }
+            res.write(JSON.stringify(rows));
+            			
 			res.end();
 			console.log(JSON.stringify(rows));
 		}

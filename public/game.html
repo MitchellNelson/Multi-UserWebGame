@@ -37,21 +37,26 @@
 				</ul>
 			</div>
 			<table id="leaderTable">
-				<tr>
+                <thead>
+                <tr>
 					<th> Avatar </th>
 					<th> Username </th>
 					<th> Highscore </th>
-					<th> Games Played </th>
-					<th> Apples Eaten </th>
 				</tr>
-					<tr v-for="item in users_json">
+                </thead>
+                <tbody v-for="item in users_json">
+                    <tr class="scoreRowLinks" @click="item.show=!item.show">
 						<td><img width="50px" height="50px" :src="item.avatar"></td>
-						<td>{{item.username}} </td>
-						<td>{{item.high_score}} </td>
-						<td>{{item.games_played}}</td>
-						<td>{{item.apples_eaten}}</td>
-					</tr>
-			</table>
+						<td >{{item.username}} </td>
+                        <td>{{item.high_score}} </td>
+                    </tr>
+                    <tr v-if="item.show==true">
+                        <td> Games Played: {{item.games_played}}</td>
+                        <td>Apples Eaten: {{item.apples_eaten}}</td>
+                    </tr>
+                </tbody>
+
+            </table>
 		</div>
 	</body>
 </html>

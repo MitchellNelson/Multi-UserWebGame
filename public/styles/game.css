@@ -35,4 +35,10 @@ th{
 	margin-top: 5rem;
 	text-align: center;
 }
-
+.scoreRowLinks:hover{
+    cursor:pointer;
+    background-color:#f4f4f4;
+}
+.scoreRowLinks td{
+    width:200px;
+}
