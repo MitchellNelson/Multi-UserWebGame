@@ -187,7 +187,7 @@ function update()
          this.physics.add.overlap(player1,dot,player_collide_dot,null,this);
          this.physics.add.overlap(player2,dot,player_collide_dot2,null,this);
          if(player_num == 1){
-            ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*708)+60, 'y':(Math.random()*500)+62}));
+            ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*600)+100, 'y':(Math.random()*400)+100}));
          }
     }
 }
