@@ -14,7 +14,9 @@
         "express-session": "^1.16.1",
         "md5": "^2.2.1",
         "multiparty": "^4.2.1",
-        "sqlite3": "^4.0.6"
+        "socket.io": "^2.2.0",
+        "sqlite3": "^4.0.6",
+        "websocket": "^1.0.28"
     },
     "engines": {
         "node": ">= 10.0.0",

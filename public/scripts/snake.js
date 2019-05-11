@@ -1,5 +1,5 @@
+var ws;
 let gameScene = new Phaser.Scene('Game');
-
 var config = {
     type: Phaser.AUTO,
     width: 800,
@@ -22,7 +22,8 @@ var config = {
 /* TODO:
 	teleport tail back to one in front if gets too far away
 */
-var player;
+var player1;
+var player2;
 var dot;
 var cursors;
 var score = 0;
@@ -32,11 +33,10 @@ var snekIsAlive = true;
 
 var prevDifficulty = 1
 var prevKey = 0;
-var snake = [];
-
+var snake1 = [];
+var snake2=[];
 var game = new Phaser.Game(config);
-
-
+var player;
 var app;
 
 function init()
@@ -51,6 +51,29 @@ function init()
 		}
 	});
 	GetScores('/scores');
+
+    var port = window.location.port || "80";
+    ws = new WebSocket("ws://" + window.location.hostname + ":" + port);
+    ws.onopen = (event) => {
+        console.log("Connection successful!");
+    };
+    ws.onmessage = (event) => {
+        console.log(event.data);
+    	var message = JSON.parse(event.data);
+		if(message.msg === "client_count"){
+			player_num = message.data;
+		}
+        else if(message.msg === "move"){
+            UpdateVelocity(message);
+        }
+        else if(message.msg ==="apple"){
+            dot.x = message.x;
+            dot.y = message.y;
+        }
+    };
+}
+function SendMessage(){
+	ws.send(app.new_message);
 }
 function GetScores(scores){
 	console.log("GetScores " + scores);
@@ -89,13 +112,20 @@ function create ()
     //set worldbounds to ground area
     let bounds = this.physics.world.setBounds(30, 32, 740, 536, true, true, true, true);
 
-	player = this.physics.add.sprite(100, 450, 'caterpillar');
-	player.changeLocationX=null;
-	player.changeLocationY=null;
-    player.setCollideWorldBounds(true);
-	player.onWorldBounds = true;
+	player1 = this.physics.add.sprite(100, 450, 'caterpillar');
+	player1.changeLocationX=null;
+	player1.changeLocationY=null;
+    player1.setCollideWorldBounds(true);
+	player1.onWorldBounds = true;
+	player2 = this.physics.add.sprite(700, 150, 'caterpillar');
+	player2.changeLocationX=null;
+	player2.changeLocationY=null;
+    player2.setCollideWorldBounds(true);
+	player2.onWorldBounds = true;
 
-	snake.push(player);
+
+	snake1.push(player1);
+    snake2.push(player2);
 
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
@@ -104,8 +134,8 @@ function create ()
     scoreText = this.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
 	
 	dot = this.physics.add.image(400, 300, 'star');
-	this.physics.add.overlap(player, dot, player_collide_dot, null, this);	
-
+	this.physics.add.overlap(player1, dot, player_collide_dot, null, this);	
+	this.physics.add.overlap(player2, dot, player_collide_dot2, null, this);	
 	//this.physics.add.overlap(player, bounds, player_collide_enemy, null, this);
 }
 function update()
@@ -128,14 +158,28 @@ function update()
 	{	
 		return;
 	}
-	follow();
-	track_movements();
-	if(dot == null){
-		dot = this.physics.add.image((Math.random() * 708) + 30, (Math.random() * 500) + 32, 'star');
-		this.physics.add.overlap(player, dot, player_collide_dot, null, this);
+	follow(snake1);
+    follow(snake2);
+    if(player_num ==1){
+        track_movements(player1, snake1);
+    }
+    else if(player_num==2){
+        track_movements(player2, snake2);
+    }
+    if(dot == null && player_num == 1){//player 1's machine chooses new rancom apple spot
+
+        ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*708)+30, 'y':(Math.random()*500)+32}));
+        //dot = this.physics.add.image((Math.random() * 708) + 30, (Math.random() * 500) + 32, 'star');
+		//this.physics.add.overlap(player1, dot, player_collide_dot, null, this);
 	}
+    if(dot==null){
+         dot = this.physics.add.image(400, 300, 'star');
+         this.physics.add.overlap(player1,dot,player_collide_dot,null,this);
+         this.physics.add.overlap(player2,dot,player_collide_dot2,null,this);
+    }
 }
-function follow(){
+
+function follow(snake){
 	//update tail positions
 	for(var i = 0; i < snake.length; ++i)
 	{
@@ -149,7 +193,6 @@ function follow(){
 			
 			var is_closeY = snake[i].body.velocity.x == 0 && snake[i].y <= (snake[i-1].changeLocationY+5) && snake[i].y >= (snake[i-1].changeLocationY-5); 
 			if(is_closeX){
-				console.log("Tail changing X velocity")
 
 				snake[i].y = snake[i-1].y+getYPadding(snake[i-1]);;
 				snake[i].x = snake[i-1].x;
@@ -162,7 +205,6 @@ function follow(){
 				snake[i-1].changeLocationY = null;
 			}
 			if(is_closeY){
-				console.log("Tail changing Y velocity")
 
 				snake[i].x = snake[i-1].x+getXPadding(snake[i-1]);
 				snake[i].y = snake[i-1].y;
@@ -208,19 +250,42 @@ function player_collide_dot(){
 	console.log("collision with apple");
 
 	//coordinates of the prev tail
-	leaderx = snake[snake.length-1].x;
-	leadery = snake[snake.length-1].y;
+	leaderx = snake1[snake1.length-1].x;
+	leadery = snake1[snake1.length-1].y;
 
-	newtail = this.physics.add.sprite(leaderx+getXPadding(snake[snake.length-1]), leadery+getYPadding(snake[snake.length-1]), 'tail');
+	newtail = this.physics.add.sprite(leaderx+getXPadding(snake1[snake1.length-1]), leadery+getYPadding(snake1[snake1.length-1]), 'tail');
 
-	this.physics.add.overlap(player, newtail, player_collide_enemy, null, this);
+	this.physics.add.overlap(player1, newtail, player_collide_enemy, null, this);
 
 	//set velocity of newtail to the velocity of the previous tail
-	newtail.setVelocityX(snake[snake.length-1].body.velocity.x);
-	newtail.setVelocityY(snake[snake.length-1].body.velocity.y);
+	newtail.setVelocityX(snake1[snake1.length-1].body.velocity.x);
+	newtail.setVelocityY(snake1[snake1.length-1].body.velocity.y);
 
-	snake.push(newtail);
+	snake1.push(newtail);
 }
+function player_collide_dot2(){
+	dot.destroy();
+	dot = null;
+	score += 1;
+	scoreText.setText('Score: ' + score);
+	console.log("collision with apple");
+
+	//coordinates of the prev tail
+	leaderx = snake2[snake2.length-1].x;
+	leadery = snake2[snake2.length-1].y;
+
+	newtail = this.physics.add.sprite(leaderx+getXPadding(snake2[snake2.length-1]), leadery+getYPadding(snake2[snake2.length-1]), 'tail');
+
+	this.physics.add.overlap(player2, newtail, player_collide_enemy, null, this);
+
+	//set velocity of newtail to the velocity of the previous tail
+	newtail.setVelocityX(snake2[snake2.length-1].body.velocity.x);
+	newtail.setVelocityY(snake2[snake2.length-1].body.velocity.y);
+
+	snake2.push(newtail);
+}
+
+
 function player_collide_enemy()
 {	
 	if(!snekIsAlive){return;}
@@ -237,9 +302,12 @@ function player_collide_enemy()
     	this.cameras.main.fade(350);
 	}, [], this);
 
-	for(var i = 0; i < snake.length; ++i)
-	{
-		snake[i].destroy();
+	for(var i = 0; i < snake1.length; ++i){
+		snake1[i].destroy();
+	}
+
+	for(var i = 0; i < snake2.length; ++i){
+		snake2[i].destroy();
 	}
 
 	// restart game
@@ -253,8 +321,8 @@ function player_collide_enemy()
 function resetGame()
 {
 	console.log("resetting game");
-	snake = [];
-
+	snake1 = [];
+    snake2 =[];
 	gameOver = false;
 	snekIsAlive = true;
 
@@ -264,7 +332,7 @@ function resetGame()
 	score = 0;
 	GetScores('/scores');
 }
-function track_movements(){
+function track_movements(player, snake){
 	if (gameOver)
     {
         return;
@@ -282,35 +350,46 @@ function track_movements(){
 		{
 			prevKey = 1;
 			changed_velocity=true;	
-			player.setVelocityX(speed * -1);
-			player.setVelocityY(0);
+            ws.send(JSON.stringify({'msg':'move', 'player':player_num, 'velocityX':speed*-1, 'velocityY':0})); 
+            //player.setVelocityX(speed * -1);
+			//player.setVelocityY(0);
 
 		}
 		else if (prevKey != 2 && cursors.right.isDown && player.body.velocity.x ==0)
 		{
 			prevKey = 2;
 			changed_velocity=true;
-			player.setVelocityX(speed);
-			player.setVelocityY(0);
+		    ws.send(JSON.stringify({'msg':'move', 'player':player_num, 'velocityX':speed, 'velocityY':0})); 
+            //player.setVelocityX(speed);
+			//player.setVelocityY(0);
 		}
 		else if (prevKey != 3 && cursors.up.isDown && player.body.velocity.y ==0)
 		{
 			prevKey = 3;
 			changed_velocity=true;
-			player.setVelocityY(speed * -1);
-			player.setVelocityX(0);
+            ws.send(JSON.stringify({'msg':'move', 'player':player_num, 'velocityX':0, 'velocityY':speed*-1})); 
+			//player.setVelocityY(speed * -1);
+			//player.setVelocityX(0);
 		}   
 		else if (prevKey != 4 && cursors.down.isDown && player.body.velocity.y ==0)
 		{
 			prevKey = 4;
 			changed_velocity=true;
-			player.setVelocityY(speed);
-			player.setVelocityX(0);
+            ws.send(JSON.stringify({'msg':'move', 'player':player_num, 'velocityX':0, 'velocityY':speed})); 
+			//player.setVelocityY(speed);
+			//player.setVelocityX(0);
 		}
-		if(!gameOver && changed_velocity){
-			player.changeLocationX = player.x;
-			player.changeLocationY = player.y;		
-			//console.log("Changed Velocity | X: "+ player.changeLocationX + ", Y: "+ player.changeLocationY);
-		}
+	}
+}
+//takes in a message and changes the velocity for either player
+function UpdateVelocity(message){
+    var player;
+    if(message.player == 1){ player = player1; }
+    else if (message.player==2){ player= player2; }
+    player.setVelocityX(message.velocityX);
+    player.setVelocityY(message.velocityY);
+	if(!gameOver){
+		player.changeLocationX = player.x;
+		player.changeLocationY = player.y;		
 	}
 }

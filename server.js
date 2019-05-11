@@ -1,4 +1,5 @@
 var path = require('path');
+var http = require('http');
 var express = require('express');
 var sqlite3 = require('sqlite3');
 var multiparty = require('multiparty');
@@ -7,9 +8,11 @@ var url = require('url');
 var md5 = require('md5');
 var session = require('express-session')
 var bodyParser = require('body-parser');
+var WebSocket = require('ws');
 
 var app = express();
 var port = 8016;
+var server = http.createServer(app);
 var db_filename = path.join(__dirname, '/db', 'gameDB.sqlite3');
 var public_dir = path.join(__dirname, 'public');
 
@@ -31,6 +34,41 @@ app.use(session({
 app.use( bodyParser.json() );
 app.use( bodyParser.urlencoded({extended: true}) );
 
+var wss = new WebSocket.Server({server: server});
+var clients = {};
+var client_count = 0;
+
+wss.on('connection', (ws) => {
+    var client_id = ws._socket.remoteAddress + ":" + ws._socket.remotePort;
+    console.log('New connection: ' + client_id);
+    client_count++;
+    clients[client_id] = ws;   
+    clients[client_id].player_num = client_count;
+    clients[client_id].send(JSON.stringify({msg:'client_count',data:clients[client_id].player_num}));
+
+    ws.on('message', (message) => {
+        console.log("here");
+        console.log('Message from ' + client_id + ': ' + message);
+        Broadcast(message);
+    });
+    ws.on('close', () => {
+        console.log('Client disconnected: ' + client_id);
+        delete clients[client_id];
+        client_count--;
+    });
+});
+
+function Broadcast(message){
+	var id;
+	for(id in clients){
+		if(clients.hasOwnProperty(id)){
+			clients[id].send(message);
+		}
+	}
+}
+
+
+
 
 var auth = function(req, res, next) {
 	
@@ -40,9 +78,6 @@ var auth = function(req, res, next) {
 		//go back to index if not logged in
 		res.redirect("index.html");
 };
-
-
-
 app.post('/stats', function(req, res){
 	console.log("setting stats for: " + req.session.user);
 	console.log("user new score: " + req.body.score);
@@ -159,9 +194,6 @@ app.post('/newuser', function (req, res) {
 })
 
 app.get('/game.html', auth, function (req, res) {
-    //console.log("in game");
-	//console.log("req.session.user = " + req.session.user);
-	//res.json({"test":"hello"});
 	res.sendFile(__dirname + '/public/game.html');
 });
 app.get('/scores', function(req, res){
@@ -181,6 +213,7 @@ app.get('/scores', function(req, res){
 	});
 	//res.json({"test":"json"});
 });
+
 app.use(express.static(public_dir));
 
-var server = app.listen(port);
+server.listen(port,'0.0.0.0');
