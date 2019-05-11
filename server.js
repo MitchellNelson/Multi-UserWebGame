@@ -43,9 +43,8 @@ wss.on('connection', (ws) => {
     console.log('New connection: ' + client_id);
     client_count++;
     clients[client_id] = ws;   
-    clients[client_id].player_num = client_count;
-    clients[client_id].send(JSON.stringify({msg:'client_count',data:clients[client_id].player_num}));
-
+    //clients[client_id].send(JSON.stringify({msg:'client_count',data:clients[client_id].player_num}));
+    BroadcastPlayerNum();
     ws.on('message', (message) => {
         console.log("here");
         console.log('Message from ' + client_id + ': ' + message);
@@ -57,6 +56,16 @@ wss.on('connection', (ws) => {
         client_count--;
     });
 });
+function BroadcastPlayerNum(){
+   	var id;
+    var i = 1;
+    for(id in clients){
+		if(clients.hasOwnProperty(id)){
+			clients[id].send(JSON.stringify({msg:'client_count',data:i}));
+		    i++;
+        }
+	}
+}
 
 function Broadcast(message){
 	var id;
