@@ -46,7 +46,6 @@ wss.on('connection', (ws) => {
     //clients[client_id].send(JSON.stringify({msg:'client_count',data:clients[client_id].player_num}));
     BroadcastPlayerNum();
     ws.on('message', (message) => {
-        console.log("here");
         console.log('Message from ' + client_id + ': ' + message);
         Broadcast(message);
     });

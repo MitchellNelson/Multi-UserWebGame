@@ -26,7 +26,8 @@ var player1;
 var player2;
 var dot;
 var cursors;
-var score = 0;
+var score1 = 0;
+var score2 = 0;
 var gameOver = false;
 var scoreText;
 var snekIsAlive = true;
@@ -72,10 +73,13 @@ function init()
             UpdateVelocity(message);
         }
         else if(message.msg ==="apple"){
-            dot.x = message.x;
-            dot.y = message.y;
+            setTimeout(function(){ 
+                dot.x = message.x;
+                dot.y = message.y;
+            }, 1200);
         }
-    };
+       
+    };  
 }
 
 function SendMessage(){
@@ -98,7 +102,6 @@ function GetScores(scores){
     }, 'json');
    
 }
-
 function SendScores(score){
 	console.log("Sending request to update stats");
 	$.post('/stats', {'score': score}, (result)=>{
@@ -147,8 +150,8 @@ function create ()
     cursors = this.input.keyboard.createCursorKeys();
 
     //  The score
-    scoreText = this.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
-	
+    scoreText1 = this.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
+	scoreText2 = this.add.text(625, 5, 'Score: 0', { fontSize:'32px', fill: '#ffffff' });
 	dot = this.physics.add.image(400, 300, 'star');
 	this.physics.add.overlap(player1, dot, player_collide_dot, null, this);	
 	this.physics.add.overlap(player2, dot, player_collide_dot2, null, this);	
@@ -156,7 +159,16 @@ function create ()
 }
 function update()
 {	
-	//reset game when difficulty changed
+    if(dot==null){
+         dot = this.physics.add.image(0, 0, 'star');
+         this.physics.add.overlap(player1,dot,player_collide_dot,null,this);
+         this.physics.add.overlap(player2,dot,player_collide_dot2,null,this);
+         if(player_num == 1){
+            ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*600)+100, 'y':(Math.random()*400)+100}));
+         }
+    }
+
+    //reset game when difficulty changed
 	if(prevDifficulty != app.difficulty)
 	{
 		prevDifficulty = app.difficulty;
@@ -181,14 +193,6 @@ function update()
     }
     else if(player_num==2){
         track_movements(player2, snake2);
-    }
-    if(dot==null){
-         dot = this.physics.add.image(0, 0, 'star');
-         this.physics.add.overlap(player1,dot,player_collide_dot,null,this);
-         this.physics.add.overlap(player2,dot,player_collide_dot2,null,this);
-         if(player_num == 1){
-            ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*600)+100, 'y':(Math.random()*400)+100}));
-         }
     }
 }
 
@@ -235,10 +239,10 @@ function follow(snake){
 
 function getYPadding(snake_element){
 	if(snake_element.body.velocity.y<0){
-		return 40;
+		return 45;
 	}
 	else if(snake_element.body.velocity.y>0){
-		return -40;
+		return -45;
 	}
 	else{
 		return 0;
@@ -246,10 +250,10 @@ function getYPadding(snake_element){
 }
 function getXPadding(snake_element){
 	if(snake_element.body.velocity.x<0){
-		return 40;
+		return 45;
 	}
 	else if(snake_element.body.velocity.x>0){
-		return -40;
+		return -45;
 	}
 	else{
 		return 0;
@@ -258,9 +262,10 @@ function getXPadding(snake_element){
 function player_collide_dot(){
 	dot.destroy();
 	dot = null;
-	score += 1;
-	scoreText.setText('Score: ' + score);
-	console.log("collision with apple");
+	score1 += 1;
+	scoreText1.setText('Score: ' + score1);
+	
+    console.log("collision with apple");
 
 	//coordinates of the prev tail
 	leaderx = snake1[snake1.length-1].x;
@@ -279,8 +284,8 @@ function player_collide_dot(){
 function player_collide_dot2(){
 	dot.destroy();
 	dot = null;
-	score += 1;
-	scoreText.setText('Score: ' + score);
+	score2 += 1;
+	scoreText2.setText('Score: ' + score2);
 	console.log("collision with apple");
 
 	//coordinates of the prev tail
@@ -306,7 +311,7 @@ function player_collide_enemy()
 	gameOver = true;
 	snekIsAlive = false;
 	console.log("game over");
-
+    ws.send(JSON.stringify({'msg':'GAMEOVER'}));
 	// shake the camera
 	this.cameras.main.shake(500);
 
@@ -333,17 +338,24 @@ function player_collide_enemy()
 }
 function resetGame()
 {
-	console.log("resetting game");
+
+    console.log("resetting game");
 	snake1 = [];
     snake2 =[];
 	gameOver = false;
 	snekIsAlive = true;
 
 	//get username
-	username = SendScores(score); 
+    if(player_num ==1){
+	    username = SendScores(score1);
+    }
+    else{
+        username = sendScores(score2);
+    } 
 
-	score = 0;
-	GetScores('/scores');
+	score1 = 0;
+	socre2 = 0;
+    GetScores('/scores');
 }
 function track_movements(player, snake){
 	if (gameOver)
