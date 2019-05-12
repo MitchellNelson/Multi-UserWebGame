@@ -51,12 +51,13 @@ function init()
 			users_json: null,						
 		    username: null,
             avatar: null,
+            opp_username: null,
+            opp_avatar: null,
             player_num: null
         }
 	});
 	GetScores('/scores');
 
-    GetUserName();
     var port = window.location.port || "80";
     ws = new WebSocket("ws://" + window.location.hostname + ":" + port);
     ws.onopen = (event) => {
@@ -68,15 +69,25 @@ function init()
 		if(message.msg === "client_count"){
 			player_num = message.data;
             app.player_num = player_num;
-		}
+            GetUserName();
+        }
+        else if(message.msg ==="opponent_name"){
+            if(message.name != app.username){
+                app.opp_username = message.name;
+                app.opp_avatar = message.avatar;
+            }
+        }
         else if(message.msg === "move"){
             UpdateVelocity(message);
         }
-        else if(message.msg ==="apple"){
+        else if(message.msg === "apple"){
            // setTimeout(function(){ 
                 dot.x = message.x;
                 dot.y = message.y;
             //}, 1200);
+        }
+        else if(message.msg === "diff"){
+            app.difficulty = message.newDiff;
         }
        
     };  
@@ -89,6 +100,7 @@ function GetUserName(){
     $.getJSON('/username').then((data)=>{
         app.username = data.username;
         app.avatar = data.avatar;
+        ws.send(JSON.stringify({'msg':"opponent_name", "name":app.username, "avatar":app.avatar}));
     },'json');
 }
 function GetScores(scores){
@@ -111,7 +123,8 @@ function SendScores(score){
 
 function changeDifficulty(newDiff)
 {
-	app.difficulty = newDiff;
+	//app.difficulty = newDiff;
+    ws.send(JSON.stringify({'msg':'diff', 'newDiff':newDiff}));
 }
 
 function preload ()
@@ -176,7 +189,7 @@ function update()
 	if(prevDifficulty != app.difficulty)
 	{
 		prevDifficulty = app.difficulty;
-
+        
 		// restart game
 		this.time.delayedCall(1, function() {
 			this.registry.destroy();
@@ -364,7 +377,7 @@ function resetGame()
     } 
 
 	score1 = 0;
-	socre2 = 0;
+	score2 = 0;
     GetScores('/scores');
 }
 function track_movements(player, snake){

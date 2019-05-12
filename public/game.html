@@ -17,12 +17,13 @@
 		<div id="app">
             <table style="width:800px">
                 <tr v-if="player_num == 1">
-                    <td><img width="50px" height="50px" :src="avatar">Player 1: {{username}}</td>
-                    <td style="float:right">Player 2: Opponent</td>
+                    <td><img width="50px" height="50px" :src="avatar"> Player 1: {{username}}</td>
+                    <td v-if="opp_username != null" style="float:right"><img width="50px" height="50px" :src="opp_avatar"> Player 2: {{opp_username}}</td>
+                    <td v-else style="float:right"> Waiting for Player 2...</td>
                 </tr>
                 <tr v-else>
-                    <td>Player 1: Opponent</td>
-                    <td style="float:right"><img width="50px" height="50px" :src="avatar">Player 2: {{username}}</td>
+                    <td><img width="50px" height="50px" :src="opp_avatar"> Player 1: {{opp_username}}</td>
+                    <td style="float:right"><img width="50px" height="50px" :src="avatar"> Player 2: {{username}}</td>
                 </tr>
             </table>
             <div id="snakeGame"></div>
