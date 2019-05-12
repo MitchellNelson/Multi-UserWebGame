@@ -73,10 +73,10 @@ function init()
             UpdateVelocity(message);
         }
         else if(message.msg ==="apple"){
-            setTimeout(function(){ 
+           // setTimeout(function(){ 
                 dot.x = message.x;
                 dot.y = message.y;
-            }, 1200);
+            //}, 1200);
         }
        
     };  
@@ -150,8 +150,8 @@ function create ()
     cursors = this.input.keyboard.createCursorKeys();
 
     //  The score
-    scoreText1 = this.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
-	scoreText2 = this.add.text(625, 5, 'Score: 0', { fontSize:'32px', fill: '#ffffff' });
+    scoreText1 = this.add.text(20, 5, 'Score: 0', { fontSize: '24px', fill: '#ffffff' });
+	scoreText2 = this.add.text(625, 5, 'Score: 0', { fontSize:'24px', fill: '#ffffff' });
 	dot = this.physics.add.image(400, 300, 'star');
 	this.physics.add.overlap(player1, dot, player_collide_dot, null, this);	
 	this.physics.add.overlap(player2, dot, player_collide_dot2, null, this);	
@@ -164,7 +164,9 @@ function update()
          this.physics.add.overlap(player1,dot,player_collide_dot,null,this);
          this.physics.add.overlap(player2,dot,player_collide_dot2,null,this);
          if(player_num == 1){
-            ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*600)+100, 'y':(Math.random()*400)+100}));
+            setTimeout(function(){ 
+                ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*600)+100, 'y':(Math.random()*400)+100}));
+            }, 500);
          }
     }
 
@@ -307,7 +309,13 @@ function player_collide_dot2(){
 function player_collide_enemy()
 {	
 	if(!snekIsAlive){return;}
+    if((player_num == 1 && score1 > score2 ) || (player_num == 2 && score2 > score1)){
+        this.add.text(250, 5, app.username + ' Won ' + score1 + ' - ' + score2, { fontSize: '32px', fill: '#ffffff' });
+    }
+    else{
+        this.add.text(250, 5, app.username + ' Lost ' + score1 + ' - ' +score2, { fontSize: '32px', fill: '#ffffff' });
 
+    }
 	gameOver = true;
 	snekIsAlive = false;
 	console.log("game over");
@@ -316,8 +324,8 @@ function player_collide_enemy()
 	this.cameras.main.shake(500);
 
 	//fade camera
-	this.time.delayedCall(250, function() {
-    	this.cameras.main.fade(350);
+	this.time.delayedCall(3250, function() {
+    	this.cameras.main.fade(3350);
 	}, [], this);
 
 	for(var i = 0; i < snake1.length; ++i){
@@ -329,7 +337,7 @@ function player_collide_enemy()
 	}
 
 	// restart game
-	this.time.delayedCall(600, function() {
+	this.time.delayedCall(1600, function() {
 		this.registry.destroy();
 		this.events.off();
 		this.scene.restart();
