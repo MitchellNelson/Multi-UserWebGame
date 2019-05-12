@@ -114,6 +114,17 @@ function changeDifficulty(newDiff)
 	app.difficulty = newDiff;
 }
 
+function OpenStatsPage(item)
+{
+	console.log(item.username);
+	var username = item.username;
+
+	var url = "./stats.html?username=" + username;
+
+	window.location.href = url;
+}
+
+
 function preload ()
 {
     this.load.image('sky', 'assets/sky.png');
@@ -138,6 +149,11 @@ function create ()
 	player1.onWorldBounds = true;
 	player2 = this.physics.add.sprite(700, 150, 'caterpillar');
 	player2.changeLocationX=null;
+	player2.changeLocationY=null;
+    player2.setCollideWorldBounds(true);
+	player2.onWorldBounds = true;
+
+
 	player2.changeLocationY=null;
     player2.setCollideWorldBounds(true);
 	player2.onWorldBounds = true;
@@ -412,9 +428,4 @@ function UpdateVelocity(message){
     if(message.player == 1){ player = player1; }
     else if (message.player==2){ player= player2; }
     player.setVelocityX(message.velocityX);
-    player.setVelocityY(message.velocityY);
-	if(!gameOver){
-		player.changeLocationX = player.x;
-		player.changeLocationY = player.y;		
-	}
-}
+    player.setVelocityY(message.velocityY);}
