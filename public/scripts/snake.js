@@ -51,12 +51,13 @@ function init()
 			users_json: null,						
 		    username: null,
             avatar: null,
+            opp_username: null,
+            opp_avatar: null,
             player_num: null
         }
 	});
 	GetScores('/scores');
 
-    GetUserName();
     var port = window.location.port || "80";
     ws = new WebSocket("ws://" + window.location.hostname + ":" + port);
     ws.onopen = (event) => {
@@ -68,15 +69,25 @@ function init()
 		if(message.msg === "client_count"){
 			player_num = message.data;
             app.player_num = player_num;
-		}
+            GetUserName();
+        }
+        else if(message.msg ==="opponent_name"){
+            if(message.name != app.username){
+                app.opp_username = message.name;
+                app.opp_avatar = message.avatar;
+            }
+        }
         else if(message.msg === "move"){
             UpdateVelocity(message);
         }
-        else if(message.msg ==="apple"){
-            setTimeout(function(){ 
+        else if(message.msg === "apple"){
+           // setTimeout(function(){ 
                 dot.x = message.x;
                 dot.y = message.y;
-            }, 1200);
+            //}, 1200);
+        }
+        else if(message.msg === "diff"){
+            app.difficulty = message.newDiff;
         }
        
     };  
@@ -89,6 +100,7 @@ function GetUserName(){
     $.getJSON('/username').then((data)=>{
         app.username = data.username;
         app.avatar = data.avatar;
+        ws.send(JSON.stringify({'msg':"opponent_name", "name":app.username, "avatar":app.avatar}));
     },'json');
 }
 function GetScores(scores){
@@ -111,7 +123,8 @@ function SendScores(score){
 
 function changeDifficulty(newDiff)
 {
-	app.difficulty = newDiff;
+	//app.difficulty = newDiff;
+    ws.send(JSON.stringify({'msg':'diff', 'newDiff':newDiff}));
 }
 
 function OpenStatsPage(item)
@@ -132,7 +145,9 @@ function preload ()
     this.load.image('star', 'assets/apple.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.image('tail', 'assets/caterpillarbody.png');
+    this.load.image('tail-blue', 'assets/caterpillarbody-blue.png');
     this.load.spritesheet('caterpillar', 'assets/caterpillarhead.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('caterpillar-blue', 'assets/caterpillarhead-blue.png', { frameWidth: 32, frameHeight: 48 });
 }
 
 function create ()
@@ -147,7 +162,7 @@ function create ()
 	player1.changeLocationY=null;
     player1.setCollideWorldBounds(true);
 	player1.onWorldBounds = true;
-	player2 = this.physics.add.sprite(700, 150, 'caterpillar');
+	player2 = this.physics.add.sprite(700, 150, 'caterpillar-blue');
 	player2.changeLocationX=null;
 	player2.changeLocationY=null;
     player2.setCollideWorldBounds(true);
@@ -166,8 +181,8 @@ function create ()
     cursors = this.input.keyboard.createCursorKeys();
 
     //  The score
-    scoreText1 = this.add.text(20, 5, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
-	scoreText2 = this.add.text(625, 5, 'Score: 0', { fontSize:'32px', fill: '#ffffff' });
+    scoreText1 = this.add.text(20, 5, 'Score: 0', { fontSize: '24px', fill: '#ffffff' });
+	scoreText2 = this.add.text(625, 5, 'Score: 0', { fontSize:'24px', fill: '#ffffff' });
 	dot = this.physics.add.image(400, 300, 'star');
 	this.physics.add.overlap(player1, dot, player_collide_dot, null, this);	
 	this.physics.add.overlap(player2, dot, player_collide_dot2, null, this);	
@@ -176,19 +191,21 @@ function create ()
 function update()
 {	
     if(dot==null){
+         if(player_num == 1){
+            setTimeout(function(){ 
+                ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*600)+100, 'y':(Math.random()*400)+100}));
+            }, 1000);
+         }
          dot = this.physics.add.image(0, 0, 'star');
          this.physics.add.overlap(player1,dot,player_collide_dot,null,this);
          this.physics.add.overlap(player2,dot,player_collide_dot2,null,this);
-         if(player_num == 1){
-            ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*600)+100, 'y':(Math.random()*400)+100}));
-         }
     }
 
     //reset game when difficulty changed
 	if(prevDifficulty != app.difficulty)
 	{
 		prevDifficulty = app.difficulty;
-
+        
 		// restart game
 		this.time.delayedCall(1, function() {
 			this.registry.destroy();
@@ -308,7 +325,7 @@ function player_collide_dot2(){
 	leaderx = snake2[snake2.length-1].x;
 	leadery = snake2[snake2.length-1].y;
 
-	newtail = this.physics.add.sprite(leaderx+getXPadding(snake2[snake2.length-1]), leadery+getYPadding(snake2[snake2.length-1]), 'tail');
+	newtail = this.physics.add.sprite(leaderx+getXPadding(snake2[snake2.length-1]), leadery+getYPadding(snake2[snake2.length-1]), 'tail-blue');
 
 	this.physics.add.overlap(player2, newtail, player_collide_enemy, null, this);
 
@@ -323,7 +340,13 @@ function player_collide_dot2(){
 function player_collide_enemy()
 {	
 	if(!snekIsAlive){return;}
+    if((player_num == 1 && score1 > score2 ) || (player_num == 2 && score2 > score1)){
+        this.add.text(250, 5, app.username + ' Won ' + score1 + ' - ' + score2, { fontSize: '32px', fill: '#ffffff' });
+    }
+    else{
+        this.add.text(250, 5, app.username + ' Lost ' + score1 + ' - ' +score2, { fontSize: '32px', fill: '#ffffff' });
 
+    }
 	gameOver = true;
 	snekIsAlive = false;
 	console.log("game over");
@@ -332,8 +355,8 @@ function player_collide_enemy()
 	this.cameras.main.shake(500);
 
 	//fade camera
-	this.time.delayedCall(250, function() {
-    	this.cameras.main.fade(350);
+	this.time.delayedCall(3250, function() {
+    	this.cameras.main.fade(3350);
 	}, [], this);
 
 	for(var i = 0; i < snake1.length; ++i){
@@ -345,7 +368,7 @@ function player_collide_enemy()
 	}
 
 	// restart game
-	this.time.delayedCall(600, function() {
+	this.time.delayedCall(1600, function() {
 		this.registry.destroy();
 		this.events.off();
 		this.scene.restart();
@@ -370,7 +393,7 @@ function resetGame()
     } 
 
 	score1 = 0;
-	socre2 = 0;
+	score2 = 0;
     GetScores('/scores');
 }
 function track_movements(player, snake){
