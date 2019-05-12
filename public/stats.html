@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>Snake</title>
+        <script type="application/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+        <link rel="stylesheet" href="styles/stats.css"/>
+ 		<script type="application/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+		<script type="application/javascript" src="scripts/stats.js"></script>
+	</head>
+	<body onload="init()" style="margin: 5rem;">
+    	<h1>Stats</h1>
+		<div id="app">	
+			<p> Username: {{username}}<br> 
+				Avatar: {{avatar}}<br>
+				Apples Eaten: {{apples_eaten}} <br>
+				Games Played: {{games_played}} <br>
+				High Score: {{high_score}} <br>
+			</p>	
+		</div>
+	</body>
+</html>
