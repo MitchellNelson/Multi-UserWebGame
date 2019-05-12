@@ -11,7 +11,7 @@ var bodyParser = require('body-parser');
 var WebSocket = require('ws');
 
 var app = express();
-var port = 8002;
+var port = 8016;
 var server = http.createServer(app);
 var db_filename = path.join(__dirname, '/db', 'gameDB.sqlite3');
 var public_dir = path.join(__dirname, 'public');
