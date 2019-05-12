@@ -350,7 +350,7 @@ function resetGame()
 	    username = SendScores(score1);
     }
     else{
-        username = sendScores(score2);
+        username = SendScores(score2);
     } 
 
 	score1 = 0;
