@@ -443,6 +443,7 @@ function track_movements(player, snake){
 			//player.setVelocityY(speed);
 			//player.setVelocityX(0);
 		}
+
 	}
 }
 //takes in a message and changes the velocity for either player
@@ -451,4 +452,9 @@ function UpdateVelocity(message){
     if(message.player == 1){ player = player1; }
     else if (message.player==2){ player= player2; }
     player.setVelocityX(message.velocityX);
-    player.setVelocityY(message.velocityY);}
+    player.setVelocityY(message.velocityY);
+    if(!gameOver){
+        player.changeLocationX = player.x;
+        player.changeLocationY = player.y;
+    }
+}
