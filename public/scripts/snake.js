@@ -121,7 +121,9 @@ function preload ()
     this.load.image('star', 'assets/apple.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.image('tail', 'assets/caterpillarbody.png');
+    this.load.image('tail-blue', 'assets/caterpillarbody-blue.png');
     this.load.spritesheet('caterpillar', 'assets/caterpillarhead.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('caterpillar-blue', 'assets/caterpillarhead-blue.png', { frameWidth: 32, frameHeight: 48 });
 }
 
 function create ()
@@ -136,7 +138,7 @@ function create ()
 	player1.changeLocationY=null;
     player1.setCollideWorldBounds(true);
 	player1.onWorldBounds = true;
-	player2 = this.physics.add.sprite(700, 150, 'caterpillar');
+	player2 = this.physics.add.sprite(700, 150, 'caterpillar-blue');
 	player2.changeLocationX=null;
 	player2.changeLocationY=null;
     player2.setCollideWorldBounds(true);
@@ -166,7 +168,7 @@ function update()
          if(player_num == 1){
             setTimeout(function(){ 
                 ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*600)+100, 'y':(Math.random()*400)+100}));
-            }, 500);
+            }, 1000);
          }
     }
 
@@ -294,7 +296,7 @@ function player_collide_dot2(){
 	leaderx = snake2[snake2.length-1].x;
 	leadery = snake2[snake2.length-1].y;
 
-	newtail = this.physics.add.sprite(leaderx+getXPadding(snake2[snake2.length-1]), leadery+getYPadding(snake2[snake2.length-1]), 'tail');
+	newtail = this.physics.add.sprite(leaderx+getXPadding(snake2[snake2.length-1]), leadery+getYPadding(snake2[snake2.length-1]), 'tail-blue');
 
 	this.physics.add.overlap(player2, newtail, player_collide_enemy, null, this);
 
