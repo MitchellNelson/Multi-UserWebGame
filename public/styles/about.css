@@ -8,25 +8,66 @@ html {
     width: 100%;
     max-height: 100%;
     min-width: 70rem;
-    margin-top: 5rem;
+    margin-top: 2rem;
+}
+body{
+	width: 75%;
+	margin: bottom: 5rem;
 }
 
 h1{
     text-align: center;
     margin-top: 1rem;
     font-size: 5rem;
+	margin-right: 2rem;
+	clear: both;
+}
+h2{
+	font-size: 3rem;
+	text-align: center;
+	margin: 5rem;
+}
+div{
+	margin-bottom: 5rem;
+}
+h3{
+	font-size: 2rem;
+	text-align: center;
 }
 p{
     margin-top: 1rem;
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 img{
     width: 20rem;
     height: 20rem;
+	text-align: center;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
 }
-tr{
-    width:80vw;
+
+#tools{
+	width: 50%;	
 }
-td{
-    width:40vw;
+#jamespic{
+	transform: rotate(90deg);
+}
+.navlink{
+	text-decoration: none;
+	color: black;
+	font-size: 2rem;
+	float: right;
+	margin-top: 2rem;
+	border: 1px solid black;
+	float: right;
+}
+
+.navlink:hover{
+	color: #737373;
+	border: 1px dotted #737373;
+}
+
+.member{
+	width: 50%;
 }
