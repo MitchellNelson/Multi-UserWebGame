@@ -152,7 +152,7 @@ function preload ()
 
 function create ()
 {
-    this.add.image(400, 300, 'ground').setScale(2.7,2.5);
+    this.add.image(400, 300, 'sky').setScale(.7,.7);
 
     //set worldbounds to ground area
     let bounds = this.physics.world.setBounds(30, 32, 740, 536, true, true, true, true);
@@ -196,7 +196,7 @@ function update()
                 ws.send(JSON.stringify({'msg':'apple', 'x':(Math.random()*600)+100, 'y':(Math.random()*400)+100}));
             }, 1000);
          }
-         dot = this.physics.add.image(0, 0, 'star');
+         dot = this.physics.add.image(-10, -10, 'star');
          this.physics.add.overlap(player1,dot,player_collide_dot,null,this);
          this.physics.add.overlap(player2,dot,player_collide_dot2,null,this);
     }
