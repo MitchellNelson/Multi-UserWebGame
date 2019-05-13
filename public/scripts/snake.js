@@ -32,7 +32,8 @@ var gameOver = false;
 var scoreText;
 var snekIsAlive = true;
 
-var prevDifficulty = 1
+var prevDifficulty = 1;
+var scoreMultiplier = [1,2,3,5];
 var prevKey = 0;
 var snake1 = [];
 var snake2=[];
@@ -47,7 +48,7 @@ function init()
 		data: {
 			difficulty: 1,
 			difficulties: ["Mobile Gamer", "Console Gamer", "PC gamer", "Apex Gamer"],
-			diffSpeeds: [150, 250, 500, 800], 
+			diffSpeeds: [150, 250, 400, 600], 
 			users_json: null,						
 		    username: null,
             avatar: null,
@@ -295,7 +296,7 @@ function getXPadding(snake_element){
 function player_collide_dot(){
 	dot.destroy();
 	dot = null;
-	score1 += 1;
+	score1 += scoreMultiplier[app.difficulty];
 	scoreText1.setText('Score: ' + score1);
 	
     console.log("collision with apple");
