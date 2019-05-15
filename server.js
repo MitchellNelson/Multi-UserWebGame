@@ -216,7 +216,7 @@ app.get('/game.html', auth, function (req, res) {
 });
 app.get('/scores', function(req, res){
 
-	db.all('SELECT username, avatar, high_score, games_played, apples_eaten  FROM users ORDER BY high_score DESC LIMIT 10',(err, rows)=>{
+	db.all('SELECT username, avatar, high_score, games_played, apples_eaten  FROM users ORDER BY high_score DESC LIMIT 5',(err, rows)=>{
 		if (err){
 			console.log(err);	
 		}
