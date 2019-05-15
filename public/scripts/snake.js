@@ -90,6 +90,9 @@ function init()
         else if(message.msg === "diff"){
             app.difficulty = message.newDiff;
         }
+        else if(message.msg ==="GAMEOVER"){
+            GetScores('/scores');   
+        }
        
     };  
 }
