@@ -163,7 +163,6 @@ app.get('/username',function(req, res){
             console.log(err);	
         }
         else{
-            console.log(rows[0].avatar);
             res.send({'username': req.session.user, 'avatar':rows[0].avatar})	
         }
 	});
