@@ -24,8 +24,8 @@ function init()
 			high_score: 0
 		}
 	});
-		
-    ws = new WebSocket("ws://" + window.location.hostname + ":" + 8016);
+    var port = window.location.port || "80";
+    ws = new WebSocket("ws://" + window.location.hostname + ":" + port);
     ws.onopen = (event) => {
         console.log("Connection successful!");
     };
